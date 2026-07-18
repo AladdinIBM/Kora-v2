@@ -1,0 +1,168 @@
+msgid "app_name"
+msgstr "نبض النادي"
+
+msgid "choose_league"
+msgstr "اختر الدوري"
+
+msgid "add_more_later"
+msgstr "يمكنك إضافة فرق أخرى لاحقًا"
+
+msgid "premier_league"
+msgstr "الدوري الإنجليزي"
+
+msgid "la_liga"
+msgstr "الدوري الإسباني"
+
+msgid "england"
+msgstr "إنجلترا"
+
+msgid "spain"
+msgstr "إسبانيا"
+
+msgid "choose_team"
+msgstr "اختر فريقك"
+
+msgid "my_teams"
+msgstr "فرقي"
+
+msgid "add_team"
+msgstr "إضافة فريق"
+
+msgid "manage_teams"
+msgstr "إدارة الفرق"
+
+msgid "settings"
+msgstr "الإعدادات"
+
+msgid "language"
+msgstr "اللغة"
+
+msgid "system"
+msgstr "النظام"
+
+msgid "last_sync"
+msgstr "آخر مزامنة"
+
+msgid "data_source"
+msgstr "مصدر البيانات"
+
+msgid "reset_app"
+msgstr "إعادة ضبط التطبيق"
+
+msgid "reset_confirm_title"
+msgstr "إعادة ضبط نبض النادي؟"
+
+msgid "reset_confirm_text"
+msgstr "ستُحذف الفرق والمباريات والشعارات المحملة."
+
+msgid "delete_team_title"
+msgstr "إزالة الفريق؟"
+
+msgid "delete_team_text"
+msgstr "ستُحذف مبارياته المحفوظة أيضًا."
+
+msgid "upcoming_matches"
+msgstr "المباريات القادمة"
+
+msgid "home"
+msgstr "صاحب الأرض"
+
+msgid "away"
+msgstr "الضيف"
+
+msgid "current"
+msgstr "الحالي"
+
+msgid "loading"
+msgstr "جارٍ التحميل…"
+
+msgid "loading_matches"
+msgstr "جارٍ تحميل المباريات…"
+
+msgid "refresh"
+msgstr "تحديث"
+
+msgid "retry"
+msgstr "إعادة المحاولة"
+
+msgid "back_to_teams"
+msgstr "العودة إلى فرقي"
+
+msgid "no_matches"
+msgstr "لا توجد مباريات مجدولة"
+
+msgid "no_teams"
+msgstr "لا توجد فرق متابعة"
+
+msgid "open_app_load_match"
+msgstr "افتح نبض النادي لتحميل المباراة"
+
+msgid "update_failed"
+msgstr "تعذر التحديث"
+
+msgid "last_updated"
+msgstr "آخر تحديث"
+
+msgid "check_connections"
+msgstr "تحقق من اتصال الساعة بالهاتف والإنترنت."
+
+msgid "error_phone_disconnected"
+msgstr "الهاتف غير متصل"
+
+msgid "error_network"
+msgstr "لا يوجد اتصال بالإنترنت"
+
+msgid "error_timeout"
+msgstr "انتهت مهلة التحديث"
+
+msgid "error_http"
+msgstr "مصدر البيانات غير متاح"
+
+msgid "error_invalid_response"
+msgstr "تغيّرت بيانات المباريات"
+
+msgid "status_scheduled"
+msgstr "مجدولة"
+
+msgid "status_live"
+msgstr "مباشر"
+
+msgid "status_halftime"
+msgstr "استراحة"
+
+msgid "status_finished"
+msgstr "انتهت"
+
+msgid "status_postponed"
+msgstr "مؤجلة"
+
+msgid "status_suspended"
+msgstr "موقوفة"
+
+msgid "status_cancelled"
+msgstr "ملغاة"
+
+msgid "time_am"
+msgstr "ص"
+
+msgid "time_pm"
+msgstr "م"
+
+msgid "never"
+msgstr "أبدًا"
+
+msgid "espn"
+msgstr "ESPN"
+
+msgid "system_language_info"
+msgstr "تستخدم لغة الساعة"
+
+msgid "already_followed"
+msgstr "مُتابَع بالفعل"
+
+msgid "league_pl_short"
+msgstr "إنج"
+
+msgid "league_ll_short"
+msgstr "إسب"
+

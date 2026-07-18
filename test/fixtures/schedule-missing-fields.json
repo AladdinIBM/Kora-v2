@@ -1,0 +1,66 @@
+{
+  "events": [
+    null,
+    {},
+    {
+      "id": "",
+      "date": "bad-date",
+      "competitions": []
+    },
+    {
+      "id": "missing-teams",
+      "date": "2026-07-18T12:00:00Z",
+      "competitions": [
+        {
+          "status": null,
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "id": null,
+                "displayName": null,
+                "logos": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "defensive-valid",
+      "date": "2026-07-19T12:00:00Z",
+      "seasonType": null,
+      "league": null,
+      "competitions": [
+        {
+          "status": {
+            "type": {
+              "state": "pre"
+            }
+          },
+          "competitors": [
+            {
+              "order": 1,
+              "team": {
+                "id": "away",
+                "location": "Away Team",
+                "logos": null
+              },
+              "score": null
+            },
+            {
+              "order": 0,
+              "team": {
+                "id": "home",
+                "name": "Home Team",
+                "logos": []
+              },
+              "score": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

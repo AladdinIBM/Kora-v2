@@ -1,0 +1,290 @@
+{
+  "events": [
+    {
+      "id": "scheduled",
+      "date": "2026-07-20T19:00:00Z",
+      "league": {
+        "id": "740",
+        "slug": "esp.1",
+        "name": "Spanish LALIGA",
+        "abbreviation": "LALIGA",
+        "shortName": "LALIGA"
+      },
+      "competitions": [
+        {
+          "date": "2026-07-20T19:00:00Z",
+          "status": {
+            "clock": 0,
+            "displayClock": "0'",
+            "type": {
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled"
+            }
+          },
+          "competitors": [
+            {
+              "id": "83",
+              "homeAway": "home",
+              "order": 0,
+              "team": {
+                "id": "83",
+                "displayName": "Barcelona",
+                "abbreviation": "BAR",
+                "logos": [
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+                    "rel": ["default"]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "86",
+              "homeAway": "away",
+              "order": 1,
+              "team": {
+                "id": "86",
+                "displayName": "Real Madrid",
+                "abbreviation": "RMA",
+                "logos": [
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+                    "rel": ["default"]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live",
+      "date": "2026-07-17T18:00:00Z",
+      "league": {
+        "slug": "eng.1",
+        "name": "English Premier League",
+        "abbreviation": "Premier League",
+        "shortName": "Premier League"
+      },
+      "competitions": [
+        {
+          "status": {
+            "clock": 67,
+            "displayClock": "67'",
+            "type": {
+              "name": "STATUS_IN_PROGRESS",
+              "state": "in",
+              "completed": false,
+              "description": "In Progress"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "id": "359",
+                "displayName": "Arsenal",
+                "abbreviation": "ARS",
+                "logos": []
+              },
+              "score": {
+                "value": 2,
+                "displayValue": "2"
+              }
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "id": "382",
+                "displayName": "Manchester City",
+                "abbreviation": "MCI",
+                "logos": []
+              },
+              "score": {
+                "value": 1,
+                "displayValue": "1"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "halftime",
+      "date": "2026-07-17T17:00:00Z",
+      "seasonType": {
+        "id": "1",
+        "name": "Club Friendly",
+        "abbreviation": "Friendly"
+      },
+      "competitions": [
+        {
+          "status": {
+            "displayClock": "45'",
+            "type": {
+              "name": "STATUS_HALFTIME",
+              "state": "in",
+              "completed": false,
+              "description": "Halftime"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "away",
+              "team": {
+                "id": "83",
+                "displayName": "Barcelona",
+                "abbreviation": "BAR"
+              },
+              "score": "1"
+            },
+            {
+              "homeAway": "home",
+              "team": {
+                "id": "392",
+                "displayName": "Birmingham City",
+                "abbreviation": "BIR"
+              },
+              "score": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finished",
+      "date": "2026-07-17T13:00:00Z",
+      "league": {
+        "slug": "esp.1",
+        "name": "Spanish LALIGA",
+        "abbreviation": "LALIGA"
+      },
+      "competitions": [
+        {
+          "status": {
+            "type": {
+              "name": "STATUS_FULL_TIME",
+              "state": "post",
+              "completed": true,
+              "description": "Full Time"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "id": "83",
+                "displayName": "Barcelona",
+                "abbreviation": "BAR"
+              },
+              "score": 3
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "id": "86",
+                "displayName": "Real Madrid",
+                "abbreviation": "RMA"
+              },
+              "score": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "postponed",
+      "date": "2026-07-17T15:00:00Z",
+      "league": {
+        "slug": "esp.1",
+        "name": "Spanish LALIGA"
+      },
+      "competitions": [
+        {
+          "status": {
+            "type": {
+              "name": "STATUS_POSTPONED",
+              "state": "pre",
+              "completed": false,
+              "description": "Postponed"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {"id": "83", "displayName": "Barcelona"}
+            },
+            {
+              "homeAway": "away",
+              "team": {"id": "86", "displayName": "Real Madrid"}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "suspended",
+      "date": "2026-07-17T16:00:00Z",
+      "league": {
+        "slug": "esp.1",
+        "name": "Spanish LALIGA"
+      },
+      "competitions": [
+        {
+          "status": {
+            "type": {
+              "name": "STATUS_SUSPENDED",
+              "state": "in",
+              "completed": false,
+              "description": "Suspended"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {"id": "83", "displayName": "Barcelona"}
+            },
+            {
+              "homeAway": "away",
+              "team": {"id": "86", "displayName": "Real Madrid"}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cancelled",
+      "date": "2026-07-17T12:00:00Z",
+      "league": {
+        "slug": "esp.1",
+        "name": "Spanish LALIGA"
+      },
+      "competitions": [
+        {
+          "status": {
+            "type": {
+              "name": "STATUS_CANCELED",
+              "state": "post",
+              "completed": false,
+              "description": "Canceled"
+            }
+          },
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {"id": "83", "displayName": "Barcelona"}
+            },
+            {
+              "homeAway": "away",
+              "team": {"id": "86", "displayName": "Real Madrid"}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,50 @@
+{
+  "sports": [
+    {
+      "leagues": [
+        {
+          "slug": "esp.1",
+          "teams": [
+            {
+              "team": {
+                "id": "86",
+                "displayName": "Real Madrid",
+                "shortDisplayName": "Real Madrid",
+                "abbreviation": "RMA",
+                "color": "ffffff",
+                "alternateColor": "FEBE10",
+                "logos": [
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+                    "rel": ["full", "default"]
+                  }
+                ]
+              }
+            },
+            {
+              "team": {
+                "id": "83",
+                "displayName": "Barcelona",
+                "shortDisplayName": "Barcelona",
+                "abbreviation": "BAR",
+                "color": "A50044",
+                "alternateColor": "004D98",
+                "logos": [
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500-dark/83.png",
+                    "rel": ["full", "dark"]
+                  },
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+                    "rel": ["full", "default"]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,105 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 1061717,
+    "appName": "ClubPulse",
+    "appType": "app",
+    "version": {
+      "code": 4,
+      "name": "1.0.3"
+    },
+    "icon": "icon.png",
+    "vender": "ClubPulse",
+    "description": "A cache-first football companion for Amazfit Bip 6"
+  },
+  "permissions": [
+    "device:os.local_storage"
+  ],
+  "runtime": {
+    "apiVersion": {
+      "compatible": "4.2",
+      "target": "4.2",
+      "minVersion": "4.2"
+    }
+  },
+  "targets": {
+    "bip-6": {
+      "module": {
+        "page": {
+          "pages": [
+            "page/index",
+            "page/league-select",
+            "page/team-select",
+            "page/club-home",
+            "page/my-teams",
+            "page/settings",
+            "page/manage-teams"
+          ]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        },
+        "secondary-widget": {
+          "widgets": [
+            {
+              "path": "secondary-widget/index",
+              "icon": "icon.png",
+              "preview": "widget-preview.png",
+              "name": "ClubPulse",
+              "runtime": {
+                "type": "js"
+              },
+              "i18n": {
+                "en-US": {
+                  "name": "ClubPulse"
+                },
+                "ar-EG": {
+                  "name": "نبض النادي"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "platforms": [
+        {
+          "name": "Amazfit Bip 6 (CN)",
+          "deviceSource": 9765120
+        },
+        {
+          "name": "Amazfit Bip 6",
+          "deviceSource": 9765121
+        },
+        {
+          "name": "Amazfit Bip 6",
+          "deviceSource": 10158337
+        }
+      ],
+      "designWidth": 390
+    }
+  },
+  "i18n": {
+    "en-US": {
+      "appName": "ClubPulse",
+      "secondary-widget": {
+        "widgets": [
+          {
+            "name": "ClubPulse"
+          }
+        ]
+      }
+    },
+    "ar-EG": {
+      "appName": "نبض النادي",
+      "secondary-widget": {
+        "widgets": [
+          {
+            "name": "نبض النادي"
+          }
+        ]
+      }
+    }
+  },
+  "defaultLanguage": "en-US",
+  "debug": false
+}

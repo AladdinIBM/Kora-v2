@@ -1,0 +1,33 @@
+{
+  "name": "clubpulse",
+  "version": "1.0.3",
+  "private": true,
+  "type": "module",
+  "description": "A cache-first football companion for Amazfit Bip 6",
+  "main": "app.js",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js",
+    "build": "zeus build",
+    "dev": "zeus dev -t \"Amazfit Bip 6\"",
+    "preview": "zeus preview",
+    "assets:generate": "node scripts/generate-base-assets.mjs",
+    "assets:sync": "npm run assets:generate && node scripts/sync-club-assets.mjs",
+    "check": "npm test && npm run build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@zeppos/zml": "0.0.29"
+  },
+  "devDependencies": {
+    "@zeppos/device-types": "4.0.0",
+    "@zeppos/zeus-cli": "1.9.2",
+    "sharp": "0.34.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "_moduleAliases": {
+    "zeppos-app-utils": "node_modules/@zeppos/zeus-cli/private-modules/zeppos-app-utils"
+  }
+}

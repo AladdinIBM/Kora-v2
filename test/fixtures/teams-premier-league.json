@@ -1,0 +1,41 @@
+{
+  "sports": [
+    {
+      "leagues": [
+        {
+          "slug": "eng.1",
+          "teams": [
+            {
+              "team": {
+                "id": "359",
+                "displayName": "Arsenal",
+                "shortDisplayName": "Arsenal",
+                "abbreviation": "ARS",
+                "color": "e20520",
+                "alternateColor": "003399",
+                "logos": [
+                  {
+                    "href": "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
+                    "rel": ["full", "default"]
+                  }
+                ]
+              }
+            },
+            {
+              "team": {
+                "id": "349",
+                "displayName": "AFC Bournemouth",
+                "shortDisplayName": "Bournemouth",
+                "abbreviation": "BOU",
+                "color": "f42727",
+                "alternateColor": "0000CC",
+                "logos": []
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

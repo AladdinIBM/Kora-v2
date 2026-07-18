@@ -1,0 +1,168 @@
+msgid "app_name"
+msgstr "ClubPulse"
+
+msgid "choose_league"
+msgstr "Choose a league"
+
+msgid "add_more_later"
+msgstr "You can add more teams later"
+
+msgid "premier_league"
+msgstr "Premier League"
+
+msgid "la_liga"
+msgstr "La Liga"
+
+msgid "england"
+msgstr "England"
+
+msgid "spain"
+msgstr "Spain"
+
+msgid "choose_team"
+msgstr "Choose your team"
+
+msgid "my_teams"
+msgstr "My Teams"
+
+msgid "add_team"
+msgstr "Add a team"
+
+msgid "manage_teams"
+msgstr "Manage teams"
+
+msgid "settings"
+msgstr "Settings"
+
+msgid "language"
+msgstr "Language"
+
+msgid "system"
+msgstr "System"
+
+msgid "last_sync"
+msgstr "Last sync"
+
+msgid "data_source"
+msgstr "Data source"
+
+msgid "reset_app"
+msgstr "Reset app"
+
+msgid "reset_confirm_title"
+msgstr "Reset ClubPulse?"
+
+msgid "reset_confirm_text"
+msgstr "Teams, matches and downloaded logos will be removed."
+
+msgid "delete_team_title"
+msgstr "Remove team?"
+
+msgid "delete_team_text"
+msgstr "Its cached matches will also be removed."
+
+msgid "upcoming_matches"
+msgstr "Upcoming matches"
+
+msgid "home"
+msgstr "HOME"
+
+msgid "away"
+msgstr "AWAY"
+
+msgid "current"
+msgstr "Current"
+
+msgid "loading"
+msgstr "Loading…"
+
+msgid "loading_matches"
+msgstr "Loading matches…"
+
+msgid "refresh"
+msgstr "Refresh"
+
+msgid "retry"
+msgstr "Retry"
+
+msgid "back_to_teams"
+msgstr "Back to My Teams"
+
+msgid "no_matches"
+msgstr "No matches scheduled"
+
+msgid "no_teams"
+msgstr "No followed teams"
+
+msgid "open_app_load_match"
+msgstr "Open ClubPulse to load match"
+
+msgid "update_failed"
+msgstr "Update failed"
+
+msgid "last_updated"
+msgstr "Last updated"
+
+msgid "check_connections"
+msgstr "Check the watch-to-phone and internet connections."
+
+msgid "error_phone_disconnected"
+msgstr "Phone disconnected"
+
+msgid "error_network"
+msgstr "No internet connection"
+
+msgid "error_timeout"
+msgstr "Update timed out"
+
+msgid "error_http"
+msgstr "Data source unavailable"
+
+msgid "error_invalid_response"
+msgstr "Match data changed"
+
+msgid "status_scheduled"
+msgstr "Scheduled"
+
+msgid "status_live"
+msgstr "LIVE"
+
+msgid "status_halftime"
+msgstr "HT"
+
+msgid "status_finished"
+msgstr "FT"
+
+msgid "status_postponed"
+msgstr "Postponed"
+
+msgid "status_suspended"
+msgstr "Suspended"
+
+msgid "status_cancelled"
+msgstr "Cancelled"
+
+msgid "time_am"
+msgstr "AM"
+
+msgid "time_pm"
+msgstr "PM"
+
+msgid "never"
+msgstr "Never"
+
+msgid "espn"
+msgstr "ESPN"
+
+msgid "system_language_info"
+msgstr "Uses watch language"
+
+msgid "already_followed"
+msgstr "Already followed"
+
+msgid "league_pl_short"
+msgstr "PL"
+
+msgid "league_ll_short"
+msgstr "LL"
+
