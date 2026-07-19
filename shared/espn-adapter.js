@@ -147,6 +147,23 @@ function normalizeCompetition(event, competition) {
   }
 }
 
+function normalizeVenue(event, competition) {
+  const venue = isObject(competition.venue)
+    ? competition.venue
+    : isObject(event.venue)
+      ? event.venue
+      : {}
+  const address = isObject(venue.address) ? venue.address : {}
+  return (
+    firstNonEmpty(
+      venue.fullName,
+      venue.name,
+      address.city,
+      address.summary,
+    ) || null
+  )
+}
+
 function normalizeFixture(event) {
   if (!isObject(event)) {
     return null
@@ -179,6 +196,7 @@ function normalizeFixture(event) {
     status,
     statusLabel: defaultStatusLabel(status),
     minute: status === 'live' ? normalizeMinute(rawStatus) : null,
+    venueName: normalizeVenue(event, competition),
     homeTeam: sides.homeTeam,
     awayTeam: sides.awayTeam,
   }
@@ -294,5 +312,6 @@ export const ESPNAdapterInternals = Object.freeze({
   normalizeFixture,
   normalizeTeam,
   normalizeScore,
+  normalizeVenue,
   selectLogo,
 })

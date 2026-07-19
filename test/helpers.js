@@ -21,6 +21,7 @@ export function makeFixture(
     status,
     statusLabel: status,
     minute: status === 'live' ? '55' : null,
+    venueName: 'Test Stadium',
     homeTeam: {
       id: 'selected',
       name: 'Selected',

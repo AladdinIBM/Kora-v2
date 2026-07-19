@@ -9,6 +9,7 @@ import {
   text_style,
   widget,
 } from '@zos/ui'
+import { CLUB_HOME_LAYOUT } from '../shared/club-home-view.js'
 import { ASSETS, COLORS } from '../shared/constants.js'
 import { isRtl } from './locale.js'
 
@@ -150,6 +151,29 @@ export function createImage(
   return instance
 }
 
+export function createImageButton(
+  registry,
+  { x, y, w, h, src, alpha = 255, onClick, hitSize = 56 },
+) {
+  const targetSize = Math.max(hitSize, w, h)
+  registry.add(
+    createWidget(widget.BUTTON, {
+      x: x - Math.floor((targetSize - w) / 2),
+      y: y - Math.floor((targetSize - h) / 2),
+      w: targetSize,
+      h: targetSize,
+      text: '',
+      normal_color: COLORS.background,
+      press_color: COLORS.surfaceSecondary,
+      radius: Math.floor(targetSize / 2),
+      click_func: onClick,
+    }),
+  )
+  const image = createImage(registry, { x, y, w, h, src, alpha })
+  image.setEnable(false)
+  return image
+}
+
 export function createButton(
   registry,
   {
@@ -185,7 +209,7 @@ export function createButton(
 export function createBackHeader(registry, title, onBack) {
   const rtl = isRtl()
   const backX = rtl ? SCREEN_WIDTH - SIDE_PADDING - 44 : SIDE_PADDING
-  createImage(registry, {
+  createImageButton(registry, {
     x: backX,
     y: 18,
     w: 40,
@@ -208,8 +232,6 @@ export function createClubHeader(
   registry,
   {
     team,
-    accent,
-    secondaryAccent = accent,
     refreshing,
     onOpenTeams,
     onRefresh,
@@ -217,58 +239,82 @@ export function createClubHeader(
   },
 ) {
   const rtl = isRtl()
-  createImage(registry, {
-    x: rtl ? 318 : 24,
-    y: 13,
-    w: 48,
-    h: 48,
-    src: team.localLogoPath || ASSETS.fallbackCrest,
-    onClick: onOpenTeams,
-  })
-  createText(registry, {
-    x: rtl ? 132 : 82,
+  const header = CLUB_HOME_LAYOUT.header
+  const mirrorX = (x, width) => SCREEN_WIDTH - x - width
+  const positionedX = (x, width) => (rtl ? mirrorX(x, width) : x)
+  const refreshTargetX =
+    header.x + header.clubWidth + header.gap
+  const settingsTargetX =
+    refreshTargetX + header.actionSize + header.gap
+  const actionIconInset = Math.floor(
+    (header.actionSize - header.actionIconSize) / 2,
+  )
+  const clubTarget = registry.add(
+    createWidget(widget.BUTTON, {
+      x: positionedX(header.x, header.clubWidth),
+      y: header.y,
+      w: header.clubWidth,
+      h: 40,
+      text: '',
+      normal_color: COLORS.background,
+      press_color: 0x171717,
+      radius: 20,
+      click_func: onOpenTeams,
+    }),
+  )
+  const logo = createImage(registry, {
+    x: positionedX(header.x + 4, header.clubLogoSize),
     y: 9,
-    w: 174,
-    h: 58,
-    text: team.name,
-    size: 24,
-    alignH: rtl ? align.RIGHT : align.LEFT,
-    onClick: onOpenTeams,
+    w: header.clubLogoSize,
+    h: header.clubLogoSize,
+    src: team.localLogoPath || ASSETS.fallbackCrest,
   })
-  const refresh = createImage(registry, {
-    x: rtl ? 76 : 266,
-    y: 17,
-    w: 42,
-    h: 42,
+  const name = createText(registry, {
+    x: positionedX(header.x + 42, 116),
+    y: 4,
+    w: 116,
+    h: 40,
+    text: team.displayName || team.name,
+    size: 18,
+    alignH: rtl ? align.RIGHT : align.LEFT,
+  })
+  const chevron = createImage(registry, {
+    x: positionedX(header.x + 166, 12),
+    y: 18,
+    w: 12,
+    h: 12,
+    src: ASSETS.chevronDown,
+  })
+  logo.setEnable(false)
+  name.setEnable(false)
+  chevron.setEnable(false)
+
+  const refresh = createImageButton(registry, {
+    x: positionedX(
+      refreshTargetX + actionIconInset,
+      header.actionIconSize,
+    ),
+    y: 12,
+    w: header.actionIconSize,
+    h: header.actionIconSize,
     src: 'refresh.png',
     alpha: refreshing ? 100 : 255,
     onClick: onRefresh,
+    hitSize: header.actionSize,
   })
-  const settings = createImage(registry, {
-    x: rtl ? 22 : 326,
-    y: 17,
-    w: 42,
-    h: 42,
+  const settings = createImageButton(registry, {
+    x: positionedX(
+      settingsTargetX + actionIconInset,
+      header.actionIconSize,
+    ),
+    y: 12,
+    w: header.actionIconSize,
+    h: header.actionIconSize,
     src: 'settings.png',
     onClick: onSettings,
+    hitSize: header.actionSize,
   })
-  createRect(registry, {
-    x: SIDE_PADDING,
-    y: 76,
-    w: (SCREEN_WIDTH - SIDE_PADDING * 2) / 2,
-    h: 4,
-    color: accent,
-    radius: 2,
-  })
-  createRect(registry, {
-    x: SIDE_PADDING + (SCREEN_WIDTH - SIDE_PADDING * 2) / 2,
-    y: 76,
-    w: (SCREEN_WIDTH - SIDE_PADDING * 2) / 2,
-    h: 4,
-    color: secondaryAccent,
-    radius: 2,
-  })
-  return { refresh, settings }
+  return { clubTarget, refresh, settings }
 }
 
 export function setImageAlpha(image, alpha) {

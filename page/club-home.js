@@ -1,11 +1,22 @@
 import { BasePage } from '@zeppos/zml/base-page'
-import { align, createWidget, prop, text_style, widget } from '@zos/ui'
+import {
+  align,
+  createWidget,
+  deleteWidget,
+  text_style,
+  widget,
+} from '@zos/ui'
 import {
   fixtureRefreshReason,
   rollFixtureCacheForward,
   shouldRefreshFixtureCache,
 } from '../shared/cache-policy.js'
-import { readableAccent, hexToNumber } from '../shared/color.js'
+import {
+  CLUB_HOME_LAYOUT,
+  CLUB_HOME_UPCOMING_LIMIT,
+  deriveScheduledClubHomeView,
+} from '../shared/club-home-view.js'
+import { hexToNumber } from '../shared/color.js'
 import {
   ASSETS,
   COLORS,
@@ -14,11 +25,11 @@ import {
   SUSPENDED_POLL_INTERVAL_MS,
 } from '../shared/constants.js'
 import { opponentFor } from '../shared/fixture-utils.js'
+import { teamBorderColors } from '../shared/team-selection.js'
 import {
   formatCompactDayTime,
-  formatLastUpdated,
-  formatLocalDayDate,
   formatLocalTime,
+  formatMatchDayDate,
   formatScore,
   isRtl,
   localizeDigits,
@@ -39,7 +50,6 @@ import {
 } from '../device/request-client.js'
 import {
   getFixtureCache,
-  getFollowedTeams,
   getLastViewedTeamId,
   getLaunchRouteState,
   getTeam,
@@ -47,23 +57,160 @@ import {
   registerDynamicLogo,
   setFixtureCache,
   setLastViewedTeamId,
+  setSelectedTeam,
 } from '../device/storage.js'
 import {
   createClubHeader,
   preparePage,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
   setImageAlpha,
-  SIDE_PADDING,
   WidgetRegistry,
 } from '../device/ui.js'
 
-const LIST_WIDTH = SCREEN_WIDTH - SIDE_PADDING * 2
+const DISPLAY_WIDTH = CLUB_HOME_LAYOUT.display.width
+const DISPLAY_HEIGHT = CLUB_HOME_LAYOUT.display.height
+const DISPLAY_SURFACE = 0x121212
+const DISPLAY_BORDER = 0x292929
+const UPCOMING_SURFACE = 0x171717
+const SKELETON_COLOR = 0x2a2a2a
+
+function createChild(container, type, options) {
+  return container.createWidget(type, options)
+}
+
+function childText(
+  container,
+  {
+    x,
+    y,
+    w,
+    h,
+    text,
+    color = COLORS.textPrimary,
+    size = 18,
+    alignH = align.LEFT,
+    alignV = align.CENTER_V,
+    style = text_style.ELLIPSIS,
+  },
+) {
+  return createChild(container, widget.TEXT, {
+    x,
+    y,
+    w,
+    h,
+    text,
+    color,
+    text_size: size,
+    align_h: alignH,
+    align_v: alignV,
+    text_style: style,
+  })
+}
+
+function childImage(container, { x, y, w, h, src }) {
+  return createChild(container, widget.IMG, {
+    x,
+    y,
+    w,
+    h,
+    src: src || ASSETS.teamPlaceholder,
+    auto_scale: true,
+    auto_scale_obj_fit: false,
+  })
+}
+
+function childRect(
+  container,
+  { x, y, w, h, color, radius = 0 },
+) {
+  return createChild(container, widget.FILL_RECT, {
+    x,
+    y,
+    w,
+    h,
+    color,
+    radius,
+    angle: 0,
+  })
+}
+
+function displaySurface(container) {
+  childRect(container, {
+    x: 0,
+    y: 0,
+    w: DISPLAY_WIDTH,
+    h: DISPLAY_HEIGHT,
+    color: DISPLAY_SURFACE,
+    radius: CLUB_HOME_LAYOUT.display.radius,
+  })
+}
+
+function displayChrome(container, accents) {
+  const half = Math.ceil(DISPLAY_WIDTH / 2)
+  const cornerRadius = CLUB_HOME_LAYOUT.display.radius
+  const accentRadius = cornerRadius - 2
+  const arcSize = accentRadius * 2
+  const arcY = DISPLAY_HEIGHT - cornerRadius - accentRadius
+  const leftArcX = cornerRadius - accentRadius
+  const rightArcX =
+    DISPLAY_WIDTH - cornerRadius - accentRadius
+  const leftJoinX = cornerRadius
+  const rightJoinX = DISPLAY_WIDTH - cornerRadius
+  const accentY =
+    DISPLAY_HEIGHT - CLUB_HOME_LAYOUT.display.accentHeight
+
+  createChild(container, widget.ARC, {
+    x: leftArcX,
+    y: arcY + 2,
+    w: arcSize,
+    h: arcSize,
+    radius: accentRadius,
+    start_angle: 90,
+    end_angle: 180,
+    line_width: CLUB_HOME_LAYOUT.display.accentHeight,
+    color: accents.primary,
+  })
+  childRect(container, {
+    x: leftJoinX- 4,
+    y: accentY,
+    w: half - leftJoinX + 4,
+    h: CLUB_HOME_LAYOUT.display.accentHeight,
+    color: accents.primary,
+  })
+  childRect(container, {
+    x: half,
+    y: accentY,
+    w: rightJoinX - half + 4,
+    h: CLUB_HOME_LAYOUT.display.accentHeight,
+    color: accents.secondary,
+  })
+  createChild(container, widget.ARC, {
+    x: rightArcX,
+    y: arcY + 2,
+    w: arcSize,
+    h: arcSize,
+    radius: accentRadius,
+    start_angle: 0,
+    end_angle: 90,
+    line_width: CLUB_HOME_LAYOUT.display.accentHeight ,
+    color: accents.secondary,
+  })
+  createChild(container, widget.STROKE_RECT, {
+    id: 'club-home-display-border',
+    x: 0,
+    y: 0,
+    w: DISPLAY_WIDTH,
+    h: DISPLAY_HEIGHT,
+    color: DISPLAY_BORDER,
+    radius: CLUB_HOME_LAYOUT.display.radius,
+    line_width: CLUB_HOME_LAYOUT.display.borderWidth,
+    angle: 0,
+  })
+}
 
 function mainValue(fixture) {
   if (!fixture) return '—'
   if (fixture.status === 'scheduled') {
-    return formatLocalTime(fixture.startTimeUtc)
+    return 'VS'
   }
   if (
     fixture.status === 'postponed' ||
@@ -75,472 +222,353 @@ function mainValue(fixture) {
   return formatScore(fixture)
 }
 
-function statusBadgeColor(fixture) {
-  if (fixture?.status === 'live') return COLORS.live
-  if (fixture?.status === 'halftime') return COLORS.halftime
-  return 0x2c2c2e
-}
-
 function centerDetail(fixture) {
   if (fixture?.status === 'live' && fixture.minute) {
-    return localizeDigits(`${fixture.minute}′`)
+    return localizeDigits(`${fixture.minute}′ ${t('played')}`)
   }
-  return ''
+  return localizedStatus(fixture?.status)
 }
 
-function accentFrame(height) {
-  return [
-    {
+function teamLogo(team) {
+  return team?.localLogoPath || ASSETS.teamPlaceholder
+}
+
+function competitionName(fixture) {
+  return (
+    fixture?.competitionName ||
+    fixture?.competitionShortName ||
+    '—'
+  )
+}
+
+function competitionShortName(fixture) {
+  return (
+    fixture?.competitionShortName ||
+    fixture?.competitionName ||
+    '—'
+  )
+}
+
+function mirrorX(x, width) {
+  return DISPLAY_WIDTH - x - width
+}
+
+function logicalX(x, width, rtl) {
+  return rtl ? mirrorX(x, width) : x
+}
+
+function renderMatchDisplay(
+  container,
+  fixture,
+  accents,
+  { scheduled = false } = {},
+) {
+  const rtl = isRtl()
+  displaySurface(container)
+
+  childText(container, {
+    x: 14,
+    y: 14,
+    w: 323,
+    h: 19,
+    text: competitionName(fixture),
+    size: 16,
+    alignH: rtl ? align.RIGHT : align.LEFT,
+  })
+  childText(container, {
+    x: 14,
+    y: 36,
+    w: 323,
+    h: 16,
+    text: formatMatchDayDate(fixture.startTimeUtc),
+    color: COLORS.textMuted,
+    size: 12,
+    alignH: align.CENTER_H,
+  })
+  childText(container, {
+    x: 14,
+    y: 51,
+    w: 323,
+    h: 31,
+    text: formatLocalTime(fixture.startTimeUtc),
+    size: 25,
+    alignH: align.CENTER_H,
+  })
+
+  childImage(container, {
+    x: 38,
+    y: 111,
+    w: 82,
+    h: 82,
+    src: teamLogo(fixture.homeTeam),
+  })
+  childImage(container, {
+    x: 231,
+    y: 111,
+    w: 82,
+    h: 82,
+    src: teamLogo(fixture.awayTeam),
+  })
+  childText(container, {
+    x: 14,
+    y: 195,
+    w: 130,
+    h: 22,
+    text: fixture.homeTeam?.name || '—',
+    size: 17,
+    alignH: align.CENTER_H,
+  })
+  childText(container, {
+    x: 207,
+    y: 195,
+    w: 130,
+    h: 22,
+    text: fixture.awayTeam?.name || '—',
+    size: 17,
+    alignH: align.CENTER_H,
+  })
+  childText(container, {
+    x: 146,
+    y: 126,
+    w: 59,
+    h: 52,
+    text: scheduled ? 'VS' : mainValue(fixture),
+    size: scheduled ? 28 : 23,
+    alignH: align.CENTER_H,
+  })
+
+  if (scheduled) {
+    childText(container, {
+      x: 70,
+      y: 254,
+      w: 211,
+      h: 18,
+      text: fixture.venueName || '',
+      size: 12,
+      alignH: align.CENTER_H,
+    })
+    childText(container, {
+      x: 70,
+      y: 277,
+      w: 211,
+      h: 19,
+      text: t('next_match'),
+      color: COLORS.textMuted,
+      size: 13,
+      alignH: align.CENTER_H,
+    })
+  } else {
+    childText(container, {
+      x: 55,
+      y: 264,
+      w: 241,
+      h: 24,
+      text: centerDetail(fixture),
+      color:
+        fixture.status === 'live'
+          ? COLORS.textPrimary
+          : COLORS.textMuted,
+      size: fixture.status === 'live' ? 16 : 13,
+      alignH: align.CENTER_H,
+    })
+  }
+
+  if (fixture.status === 'live') {
+    childRect(container, {
+      x: logicalX(285, 52, rtl),
+      y: 13,
+      w: 52,
+      h: 22,
+      color: 0xff3344,
+      radius: 7,
+    })
+    childText(container, {
+      x: logicalX(285, 52, rtl),
+      y: 13,
+      w: 52,
+      h: 22,
+      text: t('status_live'),
+      size: 12,
+      alignH: align.CENTER_H,
+    })
+  }
+
+  displayChrome(container, accents)
+}
+
+function renderStateDisplay(
+  container,
+  accents,
+  { icon, title, body = '' },
+) {
+  displaySurface(container)
+  childImage(container, {
+    x: 151,
+    y: 112,
+    w: 49,
+    h: 49,
+    src: icon,
+  })
+  childText(container, {
+    x: 32,
+    y: 170,
+    w: 287,
+    h: 27,
+    text: title,
+    size: 19,
+    alignH: align.CENTER_H,
+  })
+  if (body) {
+    childText(container, {
+      x: 33,
+      y: 202,
+      w: 285,
+      h: 38,
+      text: body,
+      color: COLORS.textMuted,
+      size: 12,
+      alignH: align.CENTER_H,
+      style: text_style.WRAP,
+    })
+  }
+  displayChrome(container, accents)
+}
+
+function renderUpcomingHeading(container) {
+  childText(container, {
+    x: 0,
+    y: CLUB_HOME_LAYOUT.upcoming.y,
+    w: DISPLAY_WIDTH,
+    h: CLUB_HOME_LAYOUT.upcoming.headingHeight,
+    text: t('upcoming_matches'),
+    size: 18,
+    alignH: isRtl() ? align.RIGHT : align.LEFT,
+  })
+}
+
+function renderUpcomingRows(container, fixtures, selectedTeamId) {
+  const rtl = isRtl()
+  renderUpcomingHeading(container)
+  let rendered = 0
+
+  for (const fixture of fixtures.slice(0, CLUB_HOME_UPCOMING_LIMIT)) {
+    const opponent = opponentFor(fixture, selectedTeamId)
+    if (!opponent) continue
+    const rowY =
+      CLUB_HOME_LAYOUT.upcoming.firstRowY +
+      rendered *
+        (CLUB_HOME_LAYOUT.upcoming.rowHeight +
+          CLUB_HOME_LAYOUT.upcoming.rowGap)
+    childRect(container, {
       x: 0,
-      y: 0,
-      w: LIST_WIDTH / 2,
-      h: 4,
-      key: 'primaryAccent',
-      radius: 2,
-    },
-    {
-      x: LIST_WIDTH / 2,
-      y: 0,
-      w: LIST_WIDTH / 2,
-      h: 4,
-      key: 'secondaryAccent',
-      radius: 2,
-    },
-    {
+      y: rowY,
+      w: DISPLAY_WIDTH,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      color: UPCOMING_SURFACE,
+      radius: 9,
+    })
+    childImage(container, {
+      x: logicalX(8, 23, rtl),
+      y: rowY + 3,
+      w: 23,
+      h: 23,
+      src: teamLogo(opponent.opponent),
+    })
+    childText(container, {
+      x: logicalX(42, 132, rtl),
+      y: rowY,
+      w: 132,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      text: opponent.opponent.name,
+      size: 12,
+      alignH: rtl ? align.RIGHT : align.LEFT,
+    })
+    childText(container, {
+      x: logicalX(178, 54, rtl),
+      y: rowY,
+      w: 54,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      text: competitionShortName(fixture),
+      color: COLORS.textMuted,
+      size: 9,
+      alignH: rtl ? align.RIGHT : align.LEFT,
+    })
+    childText(container, {
+      x: logicalX(237, 80, rtl),
+      y: rowY,
+      w: 80,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      text: formatCompactDayTime(fixture.startTimeUtc),
+      size: 11,
+      alignH: align.CENTER_H,
+    })
+    childText(container, {
+      x: logicalX(327, 16, rtl),
+      y: rowY,
+      w: 16,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      text: opponent.venue,
+      color: COLORS.textMuted,
+      size: 11,
+      alignH: align.CENTER_H,
+    })
+    rendered += 1
+  }
+
+  if (rendered === 0) {
+    childText(container, {
+      x: 20,
+      y: CLUB_HOME_LAYOUT.upcoming.firstRowY + 20,
+      w: DISPLAY_WIDTH - 40,
+      h: 48,
+      text: t('no_upcoming_matches'),
+      color: COLORS.textMuted,
+      size: 13,
+      alignH: align.CENTER_H,
+    })
+  }
+}
+
+function renderSkeletonRows(container) {
+  renderUpcomingHeading(container)
+  for (let index = 0; index < CLUB_HOME_UPCOMING_LIMIT; index += 1) {
+    const rowY =
+      CLUB_HOME_LAYOUT.upcoming.firstRowY +
+      index *
+        (CLUB_HOME_LAYOUT.upcoming.rowHeight +
+          CLUB_HOME_LAYOUT.upcoming.rowGap)
+    childRect(container, {
       x: 0,
-      y: height - 4,
-      w: LIST_WIDTH / 2,
-      h: 4,
-      key: 'primaryAccent',
-      radius: 2,
-    },
-    {
-      x: LIST_WIDTH / 2,
-      y: height - 4,
-      w: LIST_WIDTH / 2,
-      h: 4,
-      key: 'secondaryAccent',
-      radius: 2,
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 4,
-      h: height,
-      key: 'primaryAccent',
-      radius: 2,
-    },
-    {
-      x: LIST_WIDTH - 4,
-      y: 0,
-      w: 4,
-      h: height,
-      key: 'secondaryAccent',
-      radius: 2,
-    },
-  ]
-}
-
-function errorTitle(error) {
-  const key = {
-    PHONE_DISCONNECTED: 'error_phone_disconnected',
-    NETWORK_ERROR: 'error_network',
-    TIMEOUT: 'error_timeout',
-    HTTP_ERROR: 'error_http',
-    INVALID_RESPONSE: 'error_invalid_response',
-  }[error && error.code]
-  return t(key || 'update_failed')
-}
-
-function primaryConfig(rtl) {
-  return {
-    type_id: 1,
-    item_height: 238,
-    item_bg_color: COLORS.surfacePrimary,
-    item_bg_radius: 22,
-    fill_view: [
-      ...accentFrame(238),
-      {
-        x: rtl ? 12 : LIST_WIDTH - 92,
-        y: 12,
-        w: 80,
-        h: 30,
-        key: 'statusBadge',
-        radius: 8,
-      },
-    ],
-    fill_view_count: 7,
-    text_view: [
-      {
-        x: rtl ? 96 : 18,
-        y: 11,
-        w: 218,
-        h: 32,
-        key: 'competition',
-        color: COLORS.textPrimary,
-        text_size: 17,
-        align_h: rtl ? align.RIGHT : align.LEFT,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: rtl ? 12 : LIST_WIDTH - 92,
-        y: 11,
-        w: 80,
-        h: 31,
-        key: 'status',
-        color: COLORS.textPrimary,
-        text_size: 13,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: 12,
-        y: 124,
-        w: 112,
-        h: 40,
-        key: 'homeName',
-        color: COLORS.textPrimary,
-        text_size: 17,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.WRAP,
-      },
-      {
-        x: LIST_WIDTH - 124,
-        y: 124,
-        w: 112,
-        h: 40,
-        key: 'awayName',
-        color: COLORS.textPrimary,
-        text_size: 17,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.WRAP,
-      },
-      {
-        x: 112,
-        y: 58,
-        w: 118,
-        h: 64,
-        key: 'mainValue',
-        color: COLORS.textPrimary,
-        text_size: 44,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: 116,
-        y: 116,
-        w: 110,
-        h: 28,
-        key: 'centerDetail',
-        color: COLORS.textPrimary,
-        text_size: 18,
-        align_h: align.CENTER_H,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: 64,
-        y: 199,
-        w: LIST_WIDTH - 128,
-        h: 28,
-        key: 'dateLine',
-        color: COLORS.textMuted,
-        text_size: 14,
-        align_h: align.CENTER_H,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: 22,
-        y: 166,
-        w: 90,
-        h: 25,
-        key: 'homeLabel',
-        color: COLORS.textMuted,
-        text_size: 13,
-        align_h: align.CENTER_H,
-      },
-      {
-        x: LIST_WIDTH - 112,
-        y: 166,
-        w: 90,
-        h: 25,
-        key: 'awayLabel',
-        color: COLORS.textMuted,
-        text_size: 13,
-        align_h: align.CENTER_H,
-      },
-    ],
-    text_view_count: 9,
-    image_view: [
-      { x: 34, y: 52, w: 66, h: 66, key: 'homeLogo' },
-      { x: LIST_WIDTH - 100, y: 52, w: 66, h: 66, key: 'awayLogo' },
-    ],
-    image_view_count: 2,
-  }
-}
-
-function sectionConfig(rtl) {
-  return {
-    type_id: 2,
-    item_height: 52,
-    item_bg_color: COLORS.background,
-    item_bg_radius: 0,
-    text_view: [
-      {
-        x: 6,
-        y: 5,
-        w: LIST_WIDTH - 12,
-        h: 42,
-        key: 'title',
-        color: COLORS.textPrimary,
-        text_size: 26,
-        align_h: rtl ? align.RIGHT : align.LEFT,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-    ],
-    text_view_count: 1,
-  }
-}
-
-function upcomingConfig(rtl) {
-  return {
-    type_id: 3,
-    item_height: 74,
-    item_bg_color: COLORS.surfaceSecondary,
-    item_bg_radius: 16,
-    image_view: [
-      {
-        x: rtl ? 280 : 12,
-        y: 12,
-        w: 50,
-        h: 50,
-        key: 'opponentLogo',
-      },
-    ],
-    image_view_count: 1,
-    text_view: [
-      {
-        x: rtl ? 126 : 74,
-        y: 7,
-        w: rtl ? 138 : 142,
-        h: 32,
-        key: 'opponentName',
-        color: COLORS.textPrimary,
-        text_size: 19,
-        align_h: rtl ? align.RIGHT : align.LEFT,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: rtl ? 126 : 74,
-        y: 39,
-        w: rtl ? 138 : 142,
-        h: 25,
-        key: 'competition',
-        color: COLORS.textMuted,
-        text_size: 14,
-        align_h: rtl ? align.RIGHT : align.LEFT,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: rtl ? 32 : 220,
-        y: 16,
-        w: 90,
-        h: 42,
-        key: 'kickoff',
-        color: COLORS.textPrimary,
-        text_size: 15,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: rtl ? 4 : 310,
-        y: 16,
-        w: 28,
-        h: 42,
-        key: 'venue',
-        color: COLORS.textPrimary,
-        text_size: 18,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-      },
-    ],
-    text_view_count: 4,
-  }
-}
-
-function messageConfig(typeId, height, color = COLORS.textMuted) {
-  return {
-    type_id: typeId,
-    item_height: height,
-    item_bg_color: COLORS.surfacePrimary,
-    item_bg_radius: 16,
-    fill_view: [
-      {
-        x: 0,
-        y: 0,
-        w: 4,
-        h: height,
-        key: 'marker',
-        radius: 2,
-      },
-    ],
-    fill_view_count: 1,
-    text_view: [
-      {
-        x: 14,
-        y: 0,
-        w: LIST_WIDTH - 28,
-        h: height,
-        key: 'message',
-        color,
-        text_size: 15,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.WRAP,
-      },
-    ],
-    text_view_count: 1,
-  }
-}
-
-function skeletonConfig() {
-  return {
-    type_id: 5,
-    item_height: 238,
-    item_bg_color: COLORS.surfacePrimary,
-    item_bg_radius: 22,
-    fill_view: [
-      ...accentFrame(238),
-      { x: 22, y: 22, w: 150, h: 15, key: 'bar', radius: 7 },
-      { x: 30, y: 62, w: 68, h: 68, key: 'bar', radius: 34 },
-      { x: 244, y: 62, w: 68, h: 68, key: 'bar', radius: 34 },
-      { x: 120, y: 82, w: 102, h: 32, key: 'bar', radius: 10 },
-      { x: 90, y: 171, w: 162, h: 14, key: 'bar', radius: 7 },
-    ],
-    fill_view_count: 11,
-    text_view: [
-      {
-        x: 20,
-        y: 196,
-        w: LIST_WIDTH - 40,
-        h: 28,
-        key: 'message',
-        color: COLORS.textMuted,
-        text_size: 15,
-        align_h: align.CENTER_H,
-      },
-    ],
-    text_view_count: 1,
-  }
-}
-
-function errorConfig() {
-  return {
-    type_id: 6,
-    item_height: 342,
-    item_bg_color: COLORS.surfacePrimary,
-    item_bg_radius: 22,
-    fill_view: [
-      ...accentFrame(342),
-      {
-        x: 20,
-        y: 216,
-        w: LIST_WIDTH - 40,
-        h: 52,
-        key: 'retryAccent',
-        radius: 16,
-      },
-    ],
-    fill_view_count: 7,
-    image_view: [{ x: 137, y: 22, w: 68, h: 68, key: 'teamLogo' }],
-    image_view_count: 1,
-    text_view: [
-      {
-        x: 18,
-        y: 98,
-        w: LIST_WIDTH - 36,
-        h: 38,
-        key: 'title',
-        color: COLORS.textPrimary,
-        text_size: 22,
-        align_h: align.CENTER_H,
-        text_style: text_style.ELLIPSIS,
-      },
-      {
-        x: 24,
-        y: 140,
-        w: LIST_WIDTH - 48,
-        h: 60,
-        key: 'body',
-        color: COLORS.textMuted,
-        text_size: 15,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.WRAP,
-      },
-      {
-        x: 20,
-        y: 216,
-        w: LIST_WIDTH - 40,
-        h: 52,
-        key: 'retry',
-        color: COLORS.textPrimary,
-        text_size: 18,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        action: true,
-      },
-      {
-        x: 20,
-        y: 278,
-        w: LIST_WIDTH - 40,
-        h: 50,
-        key: 'back',
-        color: COLORS.textPrimary,
-        bg_color: COLORS.surfaceSecondary,
-        bg_radius: 16,
-        text_size: 17,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        action: true,
-      },
-    ],
-    text_view_count: 4,
-  }
-}
-
-function emptyConfig() {
-  return {
-    type_id: 7,
-    item_height: 238,
-    item_bg_color: COLORS.surfacePrimary,
-    item_bg_radius: 22,
-    fill_view: accentFrame(238),
-    fill_view_count: 6,
-    image_view: [{ x: 131, y: 38, w: 80, h: 80, key: 'teamLogo' }],
-    image_view_count: 1,
-    text_view: [
-      {
-        x: 24,
-        y: 136,
-        w: LIST_WIDTH - 48,
-        h: 54,
-        key: 'message',
-        color: COLORS.textPrimary,
-        text_size: 22,
-        align_h: align.CENTER_H,
-        align_v: align.CENTER_V,
-        text_style: text_style.WRAP,
-      },
-    ],
-    text_view_count: 1,
+      y: rowY,
+      w: DISPLAY_WIDTH,
+      h: CLUB_HOME_LAYOUT.upcoming.rowHeight,
+      color: UPCOMING_SURFACE,
+      radius: 9,
+    })
+    childRect(container, {
+      x: 8,
+      y: rowY + 3,
+      w: 22,
+      h: 22,
+      color: SKELETON_COLOR,
+      radius: 11,
+    })
+    childRect(container, {
+      x: 42,
+      y: rowY + 11,
+      w: 132,
+      h: 7,
+      color: SKELETON_COLOR,
+      radius: 4,
+    })
+    childRect(container, {
+      x: 237,
+      y: rowY + 11,
+      w: 60,
+      h: 7,
+      color: SKELETON_COLOR,
+      radius: 4,
+    })
   }
 }
 
@@ -550,7 +578,7 @@ Page(
       registry: null,
       team: null,
       cache: null,
-      list: null,
+      contentContainer: null,
       header: null,
       active: false,
       destroyed: false,
@@ -574,7 +602,7 @@ Page(
         replaceRoute(ROUTES.leagues)
         return
       }
-      this.state.team = requestedTeam
+      this.state.team = setSelectedTeam(requestedTeam) || requestedTeam
       setLastViewedTeamId(requestedTeam.id)
       this.state.cache = rollFixtureCacheForward(
         getFixtureCache(requestedTeam.id),
@@ -585,22 +613,18 @@ Page(
       if (!this.state.team) return
       this.rebuildPage()
       this.state.built = true
-      // Zepp OS does not call onResume for the initial presentation, so build
-      // owns the first refresh. onResume handles later returns.
       this.state.active = true
       this.refreshIfRequired()
+      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
     rebuildPage() {
       this.state.registry.clear()
-      this.state.list = null
+      this.state.contentContainer = null
       preparePage(this.state.registry)
-      const accents = this.teamAccents()
       this.state.header = createClubHeader(this.state.registry, {
         team: this.state.team,
-        accent: accents.primary,
-        secondaryAccent: accents.secondary,
         refreshing: this.state.loading,
         onOpenTeams: () => replaceRoute(ROUTES.myTeams),
         onRefresh: () => this.manualRefresh(),
@@ -609,178 +633,94 @@ Page(
       this.renderContent(false)
     },
 
-    teamAccent() {
-      return hexToNumber(
-        readableAccent(
-          this.state.team.color,
-          this.state.team.alternateColor,
-        ),
-      )
-    },
-
     teamAccents() {
-      const primary = hexToNumber(
-        this.state.team.color,
-        COLORS.fallbackAccent,
-      )
-      const secondary = hexToNumber(
-        this.state.team.alternateColor,
-        this.teamAccent(),
-      )
+      const colors = teamBorderColors(this.state.team)
+      const primary = hexToNumber(colors.primary, 0x5b5b60)
+      const secondary = hexToNumber(colors.alternate, primary)
       return { primary, secondary }
     },
 
-    buildItems() {
-      const cache = this.state.cache
-      const accents = this.teamAccents()
-      if (!cache) {
-        if (this.state.lastError) {
-          return [
-            {
-              type_id: 6,
-              primaryAccent: accents.primary,
-              secondaryAccent: accents.secondary,
-              retryAccent: COLORS.fallbackAccent,
-              teamLogo: this.state.team.localLogoPath || ASSETS.fallbackCrest,
-              title: errorTitle(this.state.lastError),
-              body: t('check_connections'),
-              retry: t('retry'),
-              back: t('back_to_teams'),
-            },
-          ]
-        }
-        return [
-          {
-            type_id: 5,
-            primaryAccent: accents.primary,
-            secondaryAccent: accents.secondary,
-            bar: 0x2c2c2e,
-            message: t('loading_matches'),
-          },
-        ]
-      }
-
-      if (!cache.primaryFixture) {
-        return [
-          {
-            type_id: 7,
-            primaryAccent: accents.primary,
-            secondaryAccent: accents.secondary,
-            teamLogo: this.state.team.localLogoPath || ASSETS.fallbackCrest,
-            message: t('no_matches'),
-          },
-        ]
-      }
-
-      const primary = cache.primaryFixture
-      const items = [
-        {
-          type_id: 1,
-          primaryAccent: accents.primary,
-          secondaryAccent: accents.secondary,
-          statusBadge: statusBadgeColor(primary),
-          competition:
-            primary.competitionShortName || primary.competitionName || '—',
-          status: localizedStatus(primary.status),
-          homeLogo: primary.homeTeam.localLogoPath || ASSETS.fallbackCrest,
-          awayLogo: primary.awayTeam.localLogoPath || ASSETS.fallbackCrest,
-          homeName: primary.homeTeam.name,
-          awayName: primary.awayTeam.name,
-          mainValue: mainValue(primary),
-          centerDetail: centerDetail(primary),
-          dateLine: `${formatLocalDayDate(primary.startTimeUtc)} • ${formatLocalTime(
-            primary.startTimeUtc,
-          )}`,
-          homeLabel: t('home'),
-          awayLabel: t('away'),
-        },
-      ]
-
-      if (this.state.lastError) {
-        items.push({
-          type_id: 4,
-          marker: COLORS.warning,
-          message: `${t('update_failed')} • ${t(
-            'last_updated',
-          )} ${formatLastUpdated(cache.fetchedAt)}`,
-        })
-      }
-
-      if (cache.upcomingFixtures.length > 0) {
-        items.push({ type_id: 2, title: t('upcoming_matches') })
-      }
-
-      for (const fixture of cache.upcomingFixtures.slice(0, 5)) {
-        const opponent = opponentFor(fixture, this.state.team.id)
-        if (!opponent) continue
-        items.push({
-          type_id: 3,
-          opponentLogo:
-            opponent.opponent.localLogoPath || ASSETS.fallbackCrest,
-          opponentName: opponent.opponent.name,
-          competition:
-            fixture.competitionShortName || fixture.competitionName || '—',
-          kickoff: formatCompactDayTime(fixture.startTimeUtc),
-          venue: opponent.venue,
-        })
-      }
-      return items
-    },
-
     renderContent(keepPosition) {
-      const rtl = isRtl()
-      const items = this.buildItems()
-      const typeConfig = items.map((item, index) => ({
-        start: index,
-        end: index,
-        type_id: item.type_id,
-      }))
+      const previousPosition =
+        keepPosition && this.state.contentContainer
+          ? Number(this.state.contentContainer.pos_y) || 0
+          : 0
 
-      if (this.state.list) {
-        this.state.list.setProperty(prop.UPDATE_DATA, {
-          data_array: items,
-          data_count: items.length,
-          data_type_config: typeConfig,
-          data_type_config_count: typeConfig.length,
-          on_page: keepPosition ? 1 : 0,
-        })
+      if (this.state.contentContainer) {
+        try {
+          deleteWidget(this.state.contentContainer)
+        } catch {
+          // The runtime may already have released a replaced container.
+        }
+      }
+
+      const scroll = CLUB_HOME_LAYOUT.scroll
+      const container = this.state.registry.add(
+        createWidget(widget.VIEW_CONTAINER, {
+          x: scroll.x,
+          y: scroll.y,
+          w: scroll.width,
+          h: scroll.height,
+          pos_y: previousPosition,
+          scroll_enable: 1,
+          bounce: 0,
+        }),
+      )
+      this.state.contentContainer = container
+
+      const accents = this.teamAccents()
+      const scheduledView = deriveScheduledClubHomeView(
+        this.state.cache,
+        Date.now(),
+      )
+      if (scheduledView) {
+        renderMatchDisplay(
+          container,
+          scheduledView.primaryFixture,
+          accents,
+          { scheduled: true },
+        )
+        renderUpcomingRows(
+          container,
+          scheduledView.upcomingFixtures,
+          this.state.team.id,
+        )
         return
       }
 
-      this.state.list = this.state.registry.add(
-        createWidget(widget.SCROLL_LIST, {
-          x: SIDE_PADDING,
-          y: 88,
-          w: LIST_WIDTH,
-          h: SCREEN_HEIGHT - 88,
-          item_space: 10,
-          item_config: [
-            primaryConfig(rtl),
-            sectionConfig(rtl),
-            upcomingConfig(rtl),
-            messageConfig(4, 38, COLORS.warning),
-            skeletonConfig(),
-            errorConfig(),
-            emptyConfig(),
-          ],
-          item_config_count: 7,
-          data_array: items,
-          data_count: items.length,
-          data_type_config: typeConfig,
-          data_type_config_count: typeConfig.length,
-          auto_rtl: false,
-          enable_scroll_bar: true,
-          item_click_func: (_list, index, dataKey) => {
-            const item = items[index]
-            if (!item || item.type_id !== 6) return
-            if (dataKey === 'retry') {
-              this.manualRefresh()
-            } else if (dataKey === 'back') {
-              replaceRoute(ROUTES.myTeams)
-            }
-          },
-        }),
-      )
+      if (!this.state.cache) {
+        if (this.state.lastError) {
+          renderStateDisplay(container, accents, {
+            icon: ASSETS.connectionOff,
+            title: t('unable_to_load_matches'),
+            body: t('check_connections'),
+          })
+        } else {
+          renderStateDisplay(container, accents, {
+            icon: ASSETS.teamPlaceholder,
+            title: t('loading_matches'),
+          })
+        }
+        renderSkeletonRows(container)
+        return
+      }
+
+      const primary = this.state.cache.primaryFixture
+      if (!primary) {
+        renderStateDisplay(container, accents, {
+          icon: ASSETS.calendarMatch,
+          title: t('no_matches'),
+          body: t('no_matches_body'),
+        })
+        renderUpcomingRows(container, [], this.state.team.id)
+        return
+      }
+
+      renderMatchDisplay(container, primary, accents)
+      const upcoming = this.state.cache.upcomingFixtures
+        .filter((fixture) => fixture?.id !== primary.id)
+        .slice(0, CLUB_HOME_UPCOMING_LIMIT)
+      renderUpcomingRows(container, upcoming, this.state.team.id)
     },
 
     onResume() {
@@ -799,6 +739,7 @@ Page(
         }
       }
       this.refreshIfRequired()
+      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
@@ -816,7 +757,7 @@ Page(
     switchTeam(team) {
       this.stopForegroundTimers()
       this.state.requestSequence += 1
-      this.state.team = team
+      this.state.team = setSelectedTeam(team) || team
       this.state.cache = rollFixtureCacheForward(getFixtureCache(team.id))
       this.state.lastError = null
       this.state.loading = false
@@ -825,6 +766,7 @@ Page(
         this.rebuildPage()
       }
       this.refreshIfRequired()
+      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
@@ -838,7 +780,8 @@ Page(
     manualRefresh() {
       const now = Date.now()
       if (
-        now - this.state.lastManualRefreshAt < MANUAL_REFRESH_COOLDOWN_MS ||
+        now - this.state.lastManualRefreshAt <
+          MANUAL_REFRESH_COOLDOWN_MS ||
         this.state.loading ||
         isRequestInFlight(`schedule:${this.state.team.id}`)
       ) {
@@ -853,7 +796,9 @@ Page(
         !this.state.active ||
         !this.state.team ||
         (!manual &&
-          !shouldRefreshFixtureCache(this.state.cache, { nowMs: Date.now() }))
+          !shouldRefreshFixtureCache(this.state.cache, {
+            nowMs: Date.now(),
+          }))
       ) {
         return
       }
@@ -885,11 +830,18 @@ Page(
             !result ||
             String(result.teamId) !== teamId ||
             !Array.isArray(result.upcomingFixtures) ||
-            !Object.prototype.hasOwnProperty.call(result, 'primaryFixture')
+            !Object.prototype.hasOwnProperty.call(
+              result,
+              'primaryFixture',
+            )
           ) {
             return
           }
-          setFixtureCache(teamId, result, result.fetchedAt || Date.now())
+          setFixtureCache(
+            teamId,
+            result,
+            result.fetchedAt || Date.now(),
+          )
           this.state.cache = getFixtureCache(teamId)
           this.state.lastError = null
           this.renderContent(true)
@@ -905,7 +857,9 @@ Page(
           }
           this.state.lastError = error
           this.renderContent(true)
-          console.log(`[ClubPulse] schedule refresh failed: ${error.code}`)
+          console.log(
+            `[ClubPulse] schedule refresh failed: ${error.code}`,
+          )
         })
         .finally(() => {
           if (
@@ -964,6 +918,7 @@ Page(
         if (this.state.destroyed) return
         registerDynamicLogo(teamId, sourceUrl, localPath)
         this.state.team = getTeam(this.state.team.id) || this.state.team
+        setSelectedTeam(this.state.team)
         this.state.cache = rollFixtureCacheForward(
           getFixtureCache(this.state.team.id),
         )

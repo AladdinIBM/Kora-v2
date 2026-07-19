@@ -13,6 +13,9 @@
       "competitions": [
         {
           "date": "2026-07-20T19:00:00Z",
+          "venue": {
+            "fullName": "Emirates Stadium"
+          },
           "status": {
             "clock": 0,
             "displayClock": "0'",
@@ -287,4 +290,3 @@
     }
   ]
 }
-

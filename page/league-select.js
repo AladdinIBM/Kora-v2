@@ -9,6 +9,7 @@ import {
 } from '../device/navigation.js'
 import {
   createImage,
+  createImageButton,
   createRect,
   createText,
   preparePage,
@@ -45,7 +46,7 @@ Page({
       preparePage(registry)
 
       if (addMode) {
-        createImage(registry, {
+        createImageButton(registry, {
           x: rtl ? 326 : SIDE_PADDING,
           y: 24,
           w: 40,

@@ -9,10 +9,6 @@ const output = path.join(root, 'assets', 'bip-6')
 const originalIcons = {
   'blank.png':
     '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"></svg>',
-  'refresh.png':
-    '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><path d="M38 18a15 15 0 1 0 1 12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="m38 7 1 11-11-1" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  'settings.png':
-    '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="7" fill="none" stroke="#fff" stroke-width="4"/><path d="M24 5v6m0 26v6M5 24h6m26 0h6M10.5 10.5l4.2 4.2m18.6 18.6 4.2 4.2m0-27-4.2 4.2M14.7 33.3l-4.2 4.2" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>',
   'back-left.png':
     '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="m25 8-12 12 12 12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   'back-right.png':
@@ -31,6 +27,27 @@ const originalIcons = {
     '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><circle cx="20" cy="20" r="16" fill="#3B82F6"/><path d="M20 12v16m-8-8h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
   'trash.png':
     '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M12 13h16l-1 21H13Zm-3 0h22M16 9h8" fill="none" stroke="#FF453A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+}
+
+const clubHomeIcons = {
+  'refresh.png': { source: 'refresh.svg', width: 25, height: 25 },
+  'settings.png': { source: 'settings.svg', width: 25, height: 25 },
+  'chevron-down.png': { source: 'chevron-down.svg', width: 14, height: 14 },
+  'calendar-match.png': {
+    source: 'calendar-match.svg',
+    width: 49,
+    height: 49,
+  },
+  'connection-off.png': {
+    source: 'connection-off.svg',
+    width: 49,
+    height: 49,
+  },
+  'team-placeholder.png': {
+    source: 'team-placeholder.svg',
+    width: 82,
+    height: 82,
+  },
 }
 
 function previewSvg(language) {
@@ -74,6 +91,20 @@ await sharp(neutralCrest)
 
 for (const [filename, svg] of Object.entries(originalIcons)) {
   await sharp(Buffer.from(svg))
+    .png({ compressionLevel: 9 })
+    .toFile(path.join(output, filename))
+}
+
+for (const [filename, icon] of Object.entries(clubHomeIcons)) {
+  const source = await readFile(
+    path.join(root, 'assets-src', 'club-home-icons', icon.source),
+  )
+  await sharp(source)
+    .resize(icon.width, icon.height, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .ensureAlpha()
     .png({ compressionLevel: 9 })
     .toFile(path.join(output, filename))
 }

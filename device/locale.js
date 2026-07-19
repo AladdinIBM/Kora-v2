@@ -99,6 +99,27 @@ export function formatLocalDayDate(timestamp) {
   )} ${MONTH_NAMES[language][date.getMonth()]}`
 }
 
+export function formatMatchDayDate(timestamp, nowMs = Date.now()) {
+  const date = new Date(timestamp)
+  const now = new Date(nowMs)
+  if (!Number.isFinite(date.getTime()) || !Number.isFinite(now.getTime())) {
+    return '—'
+  }
+  const language = isArabic() ? 'ar' : 'en'
+  const isToday =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  const dayLabel = isToday
+    ? t('today')
+    : COMPACT_DAY_NAMES[language][date.getDay()]
+  const monthLabel =
+    language === 'en'
+      ? MONTH_NAMES.en[date.getMonth()].toUpperCase()
+      : MONTH_NAMES.ar[date.getMonth()]
+  return `${dayLabel} · ${localizeDigits(date.getDate())} ${monthLabel}`
+}
+
 export function formatCompactDayTime(timestamp) {
   const date = new Date(timestamp)
   if (!Number.isFinite(date.getTime())) {

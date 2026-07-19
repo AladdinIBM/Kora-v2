@@ -64,6 +64,12 @@ msgstr "Its cached matches will also be removed."
 msgid "upcoming_matches"
 msgstr "Upcoming matches"
 
+msgid "today"
+msgstr "TODAY"
+
+msgid "next_match"
+msgstr "NEXT MATCH"
+
 msgid "home"
 msgstr "HOME"
 
@@ -90,6 +96,18 @@ msgstr "Back to My Teams"
 
 msgid "no_matches"
 msgstr "No matches scheduled"
+
+msgid "no_matches_body"
+msgstr "There are no live or upcoming matches for this club right now."
+
+msgid "no_upcoming_matches"
+msgstr "No upcoming matches"
+
+msgid "unable_to_load_matches"
+msgstr "Unable to load matches"
+
+msgid "played"
+msgstr "PLAYED"
 
 msgid "no_teams"
 msgstr "No followed teams"
@@ -165,4 +183,3 @@ msgstr "PL"
 
 msgid "league_ll_short"
 msgstr "LL"
-

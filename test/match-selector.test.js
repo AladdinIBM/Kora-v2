@@ -85,7 +85,7 @@ test('preserves home and away teams in the primary fixture', () => {
   assert.equal(primary.awayTeam.id, 'selected')
 })
 
-test('scheduled primary is excluded from up to five additional fixtures', () => {
+test('scheduled primary is excluded from up to four additional fixtures', () => {
   const fixtures = Array.from({ length: 7 }, (_, index) =>
     makeFixture(
       `match-${index}`,
@@ -96,11 +96,11 @@ test('scheduled primary is excluded from up to five additional fixtures', () => 
   assert.equal(payload.primaryFixture.id, 'match-0')
   assert.deepEqual(
     payload.upcomingFixtures.map((fixture) => fixture.id),
-    ['match-1', 'match-2', 'match-3', 'match-4', 'match-5'],
+    ['match-1', 'match-2', 'match-3', 'match-4'],
   )
 })
 
-test('finished or live primary yields the next five scheduled fixtures', () => {
+test('finished or live primary yields the next four scheduled fixtures', () => {
   const live = makeFixture('live', '2026-07-17T19:00:00Z', 'live')
   const future = Array.from({ length: 6 }, (_, index) =>
     makeFixture(
@@ -109,11 +109,11 @@ test('finished or live primary yields the next five scheduled fixtures', () => {
     ),
   )
   const upcoming = selectUpcomingFixtures([live, ...future], live, now)
-  assert.equal(upcoming.length, 5)
+  assert.equal(upcoming.length, 4)
   assert.equal(upcoming[0].id, 'future-0')
 })
 
-test('returns fewer than five fixtures when fewer exist', () => {
+test('returns fewer than four fixtures when fewer exist', () => {
   const primary = makeFixture('primary', '2026-07-18T12:00:00Z')
   const second = makeFixture('second', '2026-07-19T12:00:00Z')
   assert.deepEqual(
@@ -123,4 +123,3 @@ test('returns fewer than five fixtures when fewer exist', () => {
     ['second'],
   )
 })
-

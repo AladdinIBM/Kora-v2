@@ -52,6 +52,7 @@ test('normalizes every supported fixture status and preserves home/away', async 
   assert.equal(byId.halftime.homeTeam.id, '392')
   assert.equal(byId.halftime.awayTeam.id, '83')
   assert.equal(byId.finished.homeTeam.score, '3')
+  assert.equal(byId.scheduled.venueName, 'Emirates Stadium')
 })
 
 test('defensively skips malformed events and defaults nullable fields', async () => {
@@ -65,6 +66,7 @@ test('defensively skips malformed events and defaults nullable fields', async ()
   assert.equal(fixtures[0].awayTeam.id, 'away')
   assert.equal(fixtures[0].homeTeam.logoUrl, null)
   assert.equal(fixtures[0].homeTeam.score, null)
+  assert.equal(fixtures[0].venueName, null)
 })
 
 test('throws a typed error for invalid JSON', () => {

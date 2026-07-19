@@ -40,6 +40,7 @@ import {
 } from '../device/storage.js'
 import {
   createImage,
+  createImageButton,
   createText,
   preparePage,
   SCREEN_WIDTH,
@@ -80,7 +81,7 @@ function leagueHeaderLogo(league) {
 }
 
 function addClick(instance, onClick) {
-  instance.addEventListener(event.CLICK_DOWN, onClick)
+  instance.addEventListener(event.SELECT, onClick)
   return instance
 }
 
@@ -175,7 +176,7 @@ Page(
       const rtl = isRtl()
       preparePage(registry)
 
-      createImage(registry, {
+      createImageButton(registry, {
         x: rtl ? 308 : 44,
         y: 25,
         w: 38,
@@ -250,7 +251,8 @@ Page(
 
       this.state.teams.forEach((team, index) => {
         const y = teamRowY(index)
-        const onClick = () => this.selectTeam(index)
+        const isSelected = String(team.id) === this.state.selectedTeamId
+        const onClick = isSelected ? null : () => this.selectTeam(index)
 
         createChild(
           container,
@@ -267,7 +269,7 @@ Page(
           onClick,
         )
 
-        if (String(team.id) === this.state.selectedTeamId) {
+        if (isSelected) {
           createSelectionBorder(container, y, team, onClick)
         }
 
@@ -357,7 +359,13 @@ Page(
     selectTeam(index) {
       const team = this.state.teams[index]
       const selected = normalizeSelectedTeam(team)
-      if (!selected || this.state.destroyed) return
+      if (
+        !selected ||
+        selected.id === this.state.selectedTeamId ||
+        this.state.destroyed
+      ) {
+        return
+      }
 
       this.state.selectedTeamId = selected.id
       setSelectedLeagueCode(this.state.league.code)

@@ -64,6 +64,12 @@ msgstr "ستُحذف مبارياته المحفوظة أيضًا."
 msgid "upcoming_matches"
 msgstr "المباريات القادمة"
 
+msgid "today"
+msgstr "اليوم"
+
+msgid "next_match"
+msgstr "المباراة القادمة"
+
 msgid "home"
 msgstr "صاحب الأرض"
 
@@ -90,6 +96,18 @@ msgstr "العودة إلى فرقي"
 
 msgid "no_matches"
 msgstr "لا توجد مباريات مجدولة"
+
+msgid "no_matches_body"
+msgstr "لا توجد مباريات مباشرة أو قادمة لهذا النادي الآن."
+
+msgid "no_upcoming_matches"
+msgstr "لا توجد مباريات قادمة"
+
+msgid "unable_to_load_matches"
+msgstr "تعذر تحميل المباريات"
+
+msgid "played"
+msgstr "لُعبت"
 
 msgid "no_teams"
 msgstr "لا توجد فرق متابعة"
@@ -165,4 +183,3 @@ msgstr "إنج"
 
 msgid "league_ll_short"
 msgstr "إسب"
-

@@ -59,12 +59,16 @@ export const DEVICE_REQUEST_TIMEOUT_MS = LOGICAL_TIMEOUT_MS + 4 * 1000
 export const MANUAL_REFRESH_COOLDOWN_MS = 2 * 1000
 export const LIVE_POLL_INTERVAL_MS = 30 * 1000
 export const SUSPENDED_POLL_INTERVAL_MS = 5 * 60 * 1000
-export const MAX_UPCOMING_FIXTURES = 5
+export const MAX_UPCOMING_FIXTURES = 4
 export const MAX_DYNAMIC_LOGOS = 50
 
 export const ASSETS = Object.freeze({
   fallbackCrest: 'neutral-crest.png',
   appIcon: 'icon.png',
+  calendarMatch: 'calendar-match.png',
+  chevronDown: 'chevron-down.png',
+  connectionOff: 'connection-off.png',
+  teamPlaceholder: 'team-placeholder.png',
 })
 
 export const COLORS = Object.freeze({
