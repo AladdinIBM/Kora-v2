@@ -7,7 +7,15 @@ import {
   fetchScheduleSelection,
   fetchTeam,
 } from './espn-client.js'
-import { ensureLogoTransfer } from './logo-service.js'
+import {
+  markLogoCatalogActivated,
+  planSeasonalLogoCatalog,
+} from './logo-catalog-service.js'
+import {
+  getLogoCatalogDownloadStatus,
+  runSeasonalLogoCatalogJob,
+} from './logo-catalog-downloader.js'
+import { queueLogoCatalogTransfer } from './logo-catalog-transfer.js'
 
 const coordinator = new RequestCoordinator({
   timeoutMs: LOGICAL_TIMEOUT_MS,
@@ -64,13 +72,55 @@ async function handleRequest(sideService, request) {
     }
     case 'logo.ensure': {
       const teamId = requireId(params.teamId, 'teamId')
-      return coordinator.run(`logo:${teamId}`, () =>
-        ensureLogoTransfer(sideService, {
-          teamId,
-          logoUrl: params.logoUrl,
+      return {
+        teamId,
+        queued: false,
+        managedBy: 'seasonal-catalog',
+      }
+    }
+    case 'logo.catalog.plan': {
+      const nowMs = Number(params.nowMs)
+      return coordinator.run('logo-catalog:plan', () =>
+        planSeasonalLogoCatalog(sideService, {
+          nowMs: Number.isFinite(nowMs) ? nowMs : Date.now(),
+          watchSeason:
+            params.watchSeason === undefined
+              ? undefined
+              : params.watchSeason,
+          firstInstall: params.firstInstall === true,
+          force: params.force === true,
         }),
       )
     }
+    case 'logo.catalog.status':
+      return getLogoCatalogDownloadStatus(sideService.settings)
+    case 'logo.catalog.stage': {
+      runSeasonalLogoCatalogJob(sideService, {
+        nowMs: Number.isFinite(Number(params.nowMs))
+          ? Number(params.nowMs)
+          : Date.now(),
+        firstInstall: params.firstInstall === true,
+        force: params.force === true,
+      }).catch((error) => {
+        sideService.error(`Logo catalog staging failed: ${error.message}`)
+      })
+      return {
+        queued: true,
+        ...getLogoCatalogDownloadStatus(sideService.settings),
+      }
+    }
+    case 'logo.catalog.transfer':
+      return queueLogoCatalogTransfer(sideService, {
+        watchSeason: params.watchSeason || null,
+        receivedAssets: Array.isArray(params.receivedAssets)
+          ? params.receivedAssets
+          : [],
+      })
+    case 'logo.catalog.activated':
+      return markLogoCatalogActivated(sideService, {
+        season: params.season,
+        totalTeams: params.totalTeams,
+      })
     default:
       throw {
         code: 'INVALID_RESPONSE',
@@ -87,6 +137,19 @@ AppSideService(
 
     onRun() {
       this.log('ClubPulse Side Service running')
+      const status = getLogoCatalogDownloadStatus(this.settings)
+      runSeasonalLogoCatalogJob(this, {
+        firstInstall: status.status === 'idle',
+      })
+        .then((result) => {
+          this.log(
+            `Logo catalog ${result.status}; season=${result.season} ` +
+              `logos=${result.readyLogos}/${result.totalTeams}`,
+          )
+        })
+        .catch((error) => {
+          this.error(`Logo catalog job failed: ${error.message}`)
+        })
     },
 
     onRequest(request, respond) {
@@ -107,4 +170,3 @@ AppSideService(
     },
   }),
 )
-

@@ -9,6 +9,20 @@ import {
 } from '../shared/constants.js'
 import { planLogoEvictions, normalizeLogoIndex } from '../shared/logo-cache.js'
 import {
+  normalizeActiveLogoCatalog,
+  planLogoCatalogActivation,
+} from '../shared/logo-catalog-activation.js'
+import {
+  beginLogoCatalogTransfer as beginCatalogTransfer,
+  normalizeLogoCatalogTransferState,
+  receivedCatalogAssets,
+  recordReceivedCatalogLogo,
+} from '../shared/logo-catalog-transfer.js'
+import {
+  mergeLogoSyncStatus,
+  normalizeLogoSyncStatus,
+} from '../shared/logo-sync-status.js'
+import {
   migrateStorageSnapshot,
   safeParseJson,
   storageKeysForReset,
@@ -182,14 +196,17 @@ function resolveParticipantLogo(participant) {
   if (!participant) {
     return participant
   }
-  const bundled = bundledById.get(String(participant.id))
+  const teamId = String(participant.id)
+  const catalog = getActiveLogoCatalog().assets[teamId]
+  const bundled = bundledById.get(teamId)
   const logoIndex = getLogoIndex()
-  const dynamic = logoIndex[String(participant.id)]
+  const dynamic = logoIndex[teamId]
   return {
     ...participant,
     localLogoPath:
-      (bundled && bundled.localLogoPath) ||
+      (catalog && catalog.localPath) ||
       (dynamic && dynamic.localPath) ||
+      (bundled && bundled.localLogoPath) ||
       participant.localLogoPath ||
       null,
   }
@@ -250,19 +267,116 @@ export function getLogoIndex() {
   return normalizeLogoIndex(readJson(STORAGE_KEYS.logoIndex, {}))
 }
 
+export function getLogoCatalogTransferState() {
+  return normalizeLogoCatalogTransferState(
+    readJson(STORAGE_KEYS.logoCatalogTransfer, null),
+  )
+}
+
+export function getActiveLogoCatalog() {
+  return normalizeActiveLogoCatalog(
+    readJson(STORAGE_KEYS.logoCatalogActive, null),
+  )
+}
+
+export function getLogoSyncStatus() {
+  return normalizeLogoSyncStatus(
+    readJson(STORAGE_KEYS.logoSyncStatus, null),
+  )
+}
+
+export function setLogoSyncStatus(patch, nowMs = Date.now()) {
+  const next = mergeLogoSyncStatus(getLogoSyncStatus(), patch, nowMs)
+  writeJsonIfChanged(STORAGE_KEYS.logoSyncStatus, next)
+  return next
+}
+
+export function beginLogoCatalogTransfer(manifest) {
+  const current = getLogoCatalogTransferState()
+  const next = beginCatalogTransfer(current, manifest)
+  const retainedPaths = new Set([
+    ...Object.values(next.assets).map((asset) => asset.localPath),
+    ...Object.values(getActiveLogoCatalog().assets).map(
+      (asset) => asset.localPath,
+    ),
+  ])
+  for (const asset of Object.values(current.assets)) {
+    if (!retainedPaths.has(asset.localPath)) removeDataFile(asset.localPath)
+  }
+  writeJsonIfChanged(STORAGE_KEYS.logoCatalogTransfer, {
+    ...next,
+    expectedAssets: Object.values(next.expectedAssets),
+  })
+  return next
+}
+
+export function stageReceivedCatalogLogo(payload) {
+  const result = recordReceivedCatalogLogo(
+    getLogoCatalogTransferState(),
+    payload,
+  )
+  if (result.accepted) {
+    writeJsonIfChanged(STORAGE_KEYS.logoCatalogTransfer, {
+      ...result.state,
+      expectedAssets: Object.values(result.state.expectedAssets),
+    })
+  }
+  return result
+}
+
+export function getReceivedCatalogAssets() {
+  return receivedCatalogAssets(getLogoCatalogTransferState())
+}
+
+export function activateReadyLogoCatalog(nowMs = Date.now()) {
+  const result = planLogoCatalogActivation(
+    getActiveLogoCatalog(),
+    getLogoCatalogTransferState(),
+    nowMs,
+  )
+  if (result.transfer.status !== 'active') {
+    return result
+  }
+
+  writeJsonIfChanged(STORAGE_KEYS.logoCatalogActive, result.active)
+  writeJsonIfChanged(STORAGE_KEYS.logoCatalogTransfer, {
+    ...result.transfer,
+    expectedAssets: Object.values(result.transfer.expectedAssets),
+  })
+
+  for (const localPath of result.stalePaths) {
+    removeDataFile(localPath)
+  }
+
+  const activePaths = new Set(
+    Object.values(result.active.assets).map((asset) => asset.localPath),
+  )
+  for (const entry of Object.values(getLogoIndex())) {
+    if (!activePaths.has(entry.localPath)) removeDataFile(entry.localPath)
+  }
+  writeJsonIfChanged(STORAGE_KEYS.logoIndex, {})
+
+  const active = { ...result.active, cleanupPaths: [] }
+  writeJsonIfChanged(STORAGE_KEYS.logoCatalogActive, active)
+
+  return { ...result, active }
+}
+
 export function resolveTeamLogo(team) {
   if (!team) {
     return null
   }
   const normalizedId = String(team.id)
+  const catalog = getActiveLogoCatalog().assets[normalizedId]
   const bundled = bundledById.get(normalizedId)
   const dynamic = getLogoIndex()[normalizedId]
   return {
     ...team,
     id: normalizedId,
     localLogoPath:
-      (bundled && bundled.localLogoPath) ||
+      (catalog && catalog.localPath) ||
       (dynamic && dynamic.localPath) ||
+      (bundled && bundled.localLogoPath) ||
       team.localLogoPath ||
       null,
   }
@@ -370,6 +484,12 @@ export function resetClubPulseStorage() {
   const followedTeams = getFollowedTeams()
   const logoIndex = getLogoIndex()
   for (const entry of Object.values(logoIndex)) {
+    removeDataFile(entry.localPath)
+  }
+  for (const entry of Object.values(getLogoCatalogTransferState().assets)) {
+    removeDataFile(entry.localPath)
+  }
+  for (const entry of Object.values(getActiveLogoCatalog().assets)) {
     removeDataFile(entry.localPath)
   }
   for (const key of storageKeysForReset(

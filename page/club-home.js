@@ -36,7 +36,6 @@ import {
   localizedStatus,
   t,
 } from '../device/locale.js'
-import { receiveDynamicLogo } from '../device/logo-receiver.js'
 import {
   parseRouteParams,
   pushRoute,
@@ -53,8 +52,6 @@ import {
   getLastViewedTeamId,
   getLaunchRouteState,
   getTeam,
-  hasValidLocalLogo,
-  registerDynamicLogo,
   setFixtureCache,
   setLastViewedTeamId,
   setSelectedTeam,
@@ -615,7 +612,6 @@ Page(
       this.state.built = true
       this.state.active = true
       this.refreshIfRequired()
-      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
@@ -739,7 +735,6 @@ Page(
         }
       }
       this.refreshIfRequired()
-      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
@@ -766,7 +761,6 @@ Page(
         this.rebuildPage()
       }
       this.refreshIfRequired()
-      this.ensureFixtureLogos()
       this.configureForegroundTimers()
     },
 
@@ -845,7 +839,6 @@ Page(
           this.state.cache = getFixtureCache(teamId)
           this.state.lastError = null
           this.renderContent(true)
-          this.ensureFixtureLogos()
         })
         .catch((error) => {
           if (
@@ -872,58 +865,6 @@ Page(
             this.configureForegroundTimers()
           }
         })
-    },
-
-    ensureFixtureLogos() {
-      const cache = this.state.cache
-      if (!cache) return
-      const participants = new Map()
-      const fixtures = [
-        cache.primaryFixture,
-        ...cache.upcomingFixtures,
-      ].filter(Boolean)
-      for (const fixture of fixtures) {
-        participants.set(fixture.homeTeam.id, fixture.homeTeam)
-        participants.set(fixture.awayTeam.id, fixture.awayTeam)
-      }
-      const missing = [...participants.values()].filter(
-        (team) =>
-          !team.localLogoPath &&
-          team.logoUrl &&
-          !hasValidLocalLogo(team.id, team.logoUrl),
-      )
-      const next = (index) => {
-        if (
-          this.state.destroyed ||
-          !this.state.active ||
-          index >= missing.length
-        ) {
-          return
-        }
-        const team = missing[index]
-        requestSide(
-          this,
-          'logo.ensure',
-          { teamId: team.id, logoUrl: team.logoUrl },
-          `logo:${team.id}`,
-        )
-          .catch(() => {})
-          .finally(() => next(index + 1))
-      }
-      next(0)
-    },
-
-    onReceivedFile(file) {
-      receiveDynamicLogo(file, ({ teamId, sourceUrl, localPath }) => {
-        if (this.state.destroyed) return
-        registerDynamicLogo(teamId, sourceUrl, localPath)
-        this.state.team = getTeam(this.state.team.id) || this.state.team
-        setSelectedTeam(this.state.team)
-        this.state.cache = rollFixtureCacheForward(
-          getFixtureCache(this.state.team.id),
-        )
-        this.renderContent(true)
-      })
     },
 
     configureForegroundTimers() {

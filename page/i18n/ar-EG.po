@@ -43,6 +43,27 @@ msgstr "النظام"
 msgid "last_sync"
 msgstr "آخر مزامنة"
 
+msgid "logo_sync"
+msgstr "مزامنة الشعارات"
+
+msgid "logo_sync_waiting"
+msgstr "بانتظار البدء"
+
+msgid "logo_sync_preparing"
+msgstr "تجهيز"
+
+msgid "logo_sync_transferring"
+msgstr "نقل"
+
+msgid "logo_sync_complete"
+msgstr "مكتمل"
+
+msgid "logo_sync_failed"
+msgstr "فشل"
+
+msgid "logo_sync_unsupported"
+msgstr "غير مدعوم"
+
 msgid "data_source"
 msgstr "مصدر البيانات"
 

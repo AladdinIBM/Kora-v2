@@ -62,6 +62,7 @@ test('reset key plan deletes only ClubPulse-owned keys', () => {
   assert.equal(keys.includes('clubpulse.selectedTeam'), true)
   assert.equal(keys.includes('clubPulse.fixtureCache.359'), true)
   assert.equal(keys.includes('clubPulse.fixtureCache.83'), true)
+  assert.equal(keys.includes('clubPulse.logoCatalog.syncStatus'), true)
   assert.equal(keys.includes('unrelated.preference'), false)
   assert.equal(
     keys.filter((key) => key === 'clubPulse.fixtureCache.83').length,

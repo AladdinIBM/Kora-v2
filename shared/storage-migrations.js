@@ -70,6 +70,9 @@ export function storageKeysForReset(teamIds = []) {
     STORAGE_KEYS.followedTeams,
     STORAGE_KEYS.lastViewedTeamId,
     STORAGE_KEYS.logoIndex,
+    STORAGE_KEYS.logoCatalogTransfer,
+    STORAGE_KEYS.logoCatalogActive,
+    STORAGE_KEYS.logoSyncStatus,
     STORAGE_KEYS.lastSyncAt,
     ...LEAGUES.map((league) => STORAGE_KEYS.leagueCache(league.code)),
     ...[...new Set(teamIds.map(String))].map((teamId) =>

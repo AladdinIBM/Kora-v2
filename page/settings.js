@@ -1,6 +1,12 @@
-import { align, createWidget, text_style, widget } from '@zos/ui'
+import { align, createWidget, prop, text_style, widget } from '@zos/ui'
 import { COLORS } from '../shared/constants.js'
-import { formatLastUpdated, isRtl, t } from '../device/locale.js'
+import { logoSyncDisplayModel } from '../shared/logo-sync-status.js'
+import {
+  formatLastUpdated,
+  isRtl,
+  localizeDigits,
+  t,
+} from '../device/locale.js'
 import {
   goBack,
   pushRoute,
@@ -10,6 +16,7 @@ import {
 import {
   getFollowedTeams,
   getLastSyncAt,
+  getLogoSyncStatus,
   resetClubPulseStorage,
 } from '../device/storage.js'
 import {
@@ -23,6 +30,15 @@ import {
 } from '../device/ui.js'
 
 const LIST_WIDTH = SCREEN_WIDTH - SIDE_PADDING * 2
+const LOGO_SYNC_REFRESH_MS = 2 * 1000
+
+function logoSyncValue(status) {
+  const display = logoSyncDisplayModel(status)
+  const label = t(display.valueKey)
+  return display.progress
+    ? `${label} ${localizeDigits(display.progress)}`
+    : label
+}
 
 function rowConfig(typeId, rtl, destructive = false) {
   return {
@@ -74,6 +90,9 @@ Page({
     state: {
       registry: null,
       rows: [],
+      list: null,
+      logoSyncSignature: '',
+      logoSyncTimer: null,
     },
 
     onInit() {
@@ -85,6 +104,13 @@ Page({
       const rtl = isRtl()
       preparePage(registry)
       createBackHeader(registry, t('settings'), goBack)
+      this.renderList(false)
+    },
+
+    renderList(keepPosition) {
+      const rtl = isRtl()
+      const logoSyncStatus = getLogoSyncStatus()
+      this.state.logoSyncSignature = JSON.stringify(logoSyncStatus)
       this.state.rows = [
         {
           type_id: 1,
@@ -105,6 +131,13 @@ Page({
           action: null,
           label: t('language'),
           value: t('system'),
+          indicator: 'blank.png',
+        },
+        {
+          type_id: 1,
+          action: null,
+          label: t('logo_sync'),
+          value: logoSyncValue(logoSyncStatus),
           indicator: 'blank.png',
         },
         {
@@ -134,7 +167,17 @@ Page({
         end: index,
         type_id: row.type_id,
       }))
-      registry.add(
+      if (this.state.list) {
+        this.state.list.setProperty(prop.UPDATE_DATA, {
+          data_array: this.state.rows,
+          data_count: this.state.rows.length,
+          data_type_config: types,
+          data_type_config_count: types.length,
+          on_page: keepPosition ? 1 : 0,
+        })
+        return
+      }
+      this.state.list = this.state.registry.add(
         createWidget(widget.SCROLL_LIST, {
           x: SIDE_PADDING,
           y: 76,
@@ -155,6 +198,28 @@ Page({
           item_click_func: (_list, index) => this.handleRow(index),
         }),
       )
+    },
+
+    refreshLogoSyncRow() {
+      const signature = JSON.stringify(getLogoSyncStatus())
+      if (signature !== this.state.logoSyncSignature) {
+        this.renderList(true)
+      }
+    },
+
+    startLogoSyncRefresh() {
+      this.stopLogoSyncRefresh()
+      this.state.logoSyncTimer = setInterval(
+        () => this.refreshLogoSyncRow(),
+        LOGO_SYNC_REFRESH_MS,
+      )
+    },
+
+    stopLogoSyncRefresh() {
+      if (this.state.logoSyncTimer !== null) {
+        clearInterval(this.state.logoSyncTimer)
+        this.state.logoSyncTimer = null
+      }
     },
 
     handleRow(index) {
@@ -178,10 +243,18 @@ Page({
     onResume() {
       if (getFollowedTeams().length === 0) {
         replaceRoute(ROUTES.leagues)
+        return
       }
+      this.refreshLogoSyncRow()
+      this.startLogoSyncRefresh()
+    },
+
+    onPause() {
+      this.stopLogoSyncRefresh()
     },
 
     onDestroy() {
+      this.stopLogoSyncRefresh()
       this.state.registry?.clear()
     },
 })

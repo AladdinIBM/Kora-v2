@@ -91,6 +91,9 @@ export const STORAGE_KEYS = Object.freeze({
   followedTeams: 'clubPulse.followedTeams',
   lastViewedTeamId: 'clubPulse.lastViewedTeamId',
   logoIndex: 'clubPulse.logoIndex',
+  logoCatalogTransfer: 'clubPulse.logoCatalog.transfer',
+  logoCatalogActive: 'clubPulse.logoCatalog.active',
+  logoSyncStatus: 'clubPulse.logoCatalog.syncStatus',
   lastSyncAt: 'clubPulse.lastSyncAt',
   leagueCache(leagueCode) {
     return `clubPulse.leagueCache.${leagueCode}`

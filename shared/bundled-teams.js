@@ -10,7 +10,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "f42727",
     "alternateColor": "0000CC",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/349.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/349.png"
+    "localLogoPath": null
   },
   {
     "id": "359",
@@ -21,7 +21,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "e20520",
     "alternateColor": "003399",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/359.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/359.png"
+    "localLogoPath": null
   },
   {
     "id": "362",
@@ -32,7 +32,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "660e36",
     "alternateColor": "333333",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/362.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/362.png"
+    "localLogoPath": null
   },
   {
     "id": "337",
@@ -43,7 +43,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "f42727",
     "alternateColor": "f8ced9",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/337.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/337.png"
+    "localLogoPath": null
   },
   {
     "id": "331",
@@ -54,7 +54,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0606fa",
     "alternateColor": "ffdd00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/331.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/331.png"
+    "localLogoPath": null
   },
   {
     "id": "363",
@@ -65,7 +65,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "144992",
     "alternateColor": "FFFFFF",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/363.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/363.png"
+    "localLogoPath": null
   },
   {
     "id": "388",
@@ -76,7 +76,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "87cced",
     "alternateColor": "ffffff",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/388.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/388.png"
+    "localLogoPath": null
   },
   {
     "id": "384",
@@ -87,7 +87,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0202fb",
     "alternateColor": "ffdd00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/384.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/384.png"
+    "localLogoPath": null
   },
   {
     "id": "368",
@@ -98,7 +98,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0606fa",
     "alternateColor": "132257",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/368.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/368.png"
+    "localLogoPath": null
   },
   {
     "id": "370",
@@ -109,7 +109,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "00CC00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/370.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/370.png"
+    "localLogoPath": null
   },
   {
     "id": "306",
@@ -120,7 +120,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "f28800",
     "alternateColor": "ffffff",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/306.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/306.png"
+    "localLogoPath": null
   },
   {
     "id": "373",
@@ -131,7 +131,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0000fa",
     "alternateColor": "cd1937",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/373.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/373.png"
+    "localLogoPath": null
   },
   {
     "id": "357",
@@ -142,7 +142,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "0000FF",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/357.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/357.png"
+    "localLogoPath": null
   },
   {
     "id": "364",
@@ -153,7 +153,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "d11317",
     "alternateColor": "FFFFFF",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/364.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/364.png"
+    "localLogoPath": null
   },
   {
     "id": "382",
@@ -164,7 +164,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "99c5ea",
     "alternateColor": "000000",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/382.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/382.png"
+    "localLogoPath": null
   },
   {
     "id": "360",
@@ -175,7 +175,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "da020e",
     "alternateColor": "FFFFFF",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/360.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/360.png"
+    "localLogoPath": null
   },
   {
     "id": "361",
@@ -186,7 +186,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "000000",
     "alternateColor": "ffffff",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/361.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/361.png"
+    "localLogoPath": null
   },
   {
     "id": "393",
@@ -197,7 +197,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "c8102e",
     "alternateColor": "132257",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/393.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/393.png"
+    "localLogoPath": null
   },
   {
     "id": "366",
@@ -208,7 +208,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "EB172B",
     "alternateColor": "87cced",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/366.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/366.png"
+    "localLogoPath": null
   },
   {
     "id": "367",
@@ -219,7 +219,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "000000",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/367.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/367.png"
+    "localLogoPath": null
   },
   {
     "id": "96",
@@ -230,7 +230,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0000ff",
     "alternateColor": "c3c3c3",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/96.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/96.png"
+    "localLogoPath": null
   },
   {
     "id": "93",
@@ -241,7 +241,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "C8142F",
     "alternateColor": "0000ff",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/93.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/93.png"
+    "localLogoPath": null
   },
   {
     "id": "1068",
@@ -252,7 +252,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ca3624",
     "alternateColor": "000099",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/1068.png"
+    "localLogoPath": null
   },
   {
     "id": "83",
@@ -263,7 +263,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "990000",
     "alternateColor": "FCE38A",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/83.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/83.png"
+    "localLogoPath": null
   },
   {
     "id": "85",
@@ -274,7 +274,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "6cace4",
     "alternateColor": "004996",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/85.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/85.png"
+    "localLogoPath": null
   },
   {
     "id": "90",
@@ -285,7 +285,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "3366CC",
     "alternateColor": "b9e8f0",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/90.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/90.png"
+    "localLogoPath": null
   },
   {
     "id": "3751",
@@ -296,7 +296,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "288A00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/3751.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/3751.png"
+    "localLogoPath": null
   },
   {
     "id": "88",
@@ -307,7 +307,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "3366CC",
     "alternateColor": "C8142F",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/88.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/88.png"
+    "localLogoPath": null
   },
   {
     "id": "2922",
@@ -318,7 +318,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "0000ff",
     "alternateColor": "C8142F",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2922.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/2922.png"
+    "localLogoPath": null
   },
   {
     "id": "1538",
@@ -329,7 +329,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "C8142F",
     "alternateColor": "000000",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1538.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/1538.png"
+    "localLogoPath": null
   },
   {
     "id": "99",
@@ -340,7 +340,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "b9e8f0",
     "alternateColor": "ffff00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/99.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/99.png"
+    "localLogoPath": null
   },
   {
     "id": "97",
@@ -351,7 +351,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "cd0000",
     "alternateColor": "ffffff",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/97.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/97.png"
+    "localLogoPath": null
   },
   {
     "id": "87",
@@ -362,7 +362,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "3B6C1A",
     "alternateColor": "0EB214",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/87.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/87.png"
+    "localLogoPath": null
   },
   {
     "id": "101",
@@ -373,7 +373,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "cd0000",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/101.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/101.png"
+    "localLogoPath": null
   },
   {
     "id": "244",
@@ -384,7 +384,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "288A00",
     "alternateColor": "ccff00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/244.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/244.png"
+    "localLogoPath": null
   },
   {
     "id": "86",
@@ -395,7 +395,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "00529F",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/86.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/86.png"
+    "localLogoPath": null
   },
   {
     "id": "89",
@@ -406,7 +406,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "3366CC",
     "alternateColor": "ffdd00",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/89.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/89.png"
+    "localLogoPath": null
   },
   {
     "id": "243",
@@ -417,7 +417,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "d81022",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/243.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/243.png"
+    "localLogoPath": null
   },
   {
     "id": "94",
@@ -428,7 +428,7 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffffff",
     "alternateColor": "004996",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/94.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/94.png"
+    "localLogoPath": null
   },
   {
     "id": "102",
@@ -439,6 +439,6 @@ export const BUNDLED_TEAMS = Object.freeze([
     "color": "ffff00",
     "alternateColor": "6cace4",
     "logoUrl": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png&w=100&h=100&scale=crop&cquality=40&location=origin",
-    "localLogoPath": "teams/102.png"
+    "localLogoPath": null
   }
 ])

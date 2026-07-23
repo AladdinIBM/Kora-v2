@@ -1,12 +1,10 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import sharp from 'sharp'
 import { ESPNAdapter } from '../shared/espn-adapter.js'
 import { ESPN_ENDPOINTS, LEAGUES } from '../shared/constants.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const teamAssetDirectory = path.join(root, 'assets', 'bip-6', 'teams')
 const dataDirectory = path.join(root, 'data')
 
 async function getJson(url) {
@@ -22,27 +20,6 @@ async function getJson(url) {
   return response.json()
 }
 
-async function downloadAndOptimize(team) {
-  if (!team.logoUrl) {
-    return false
-  }
-  const response = await fetch(team.logoUrl)
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status} for ${team.logoUrl}`)
-  }
-  const source = Buffer.from(await response.arrayBuffer())
-  await sharp(source)
-    .resize(64, 64, {
-      fit: 'contain',
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    })
-    .ensureAlpha()
-    .png({ compressionLevel: 9 })
-    .toFile(path.join(teamAssetDirectory, `${team.id}.png`))
-  return true
-}
-
-await mkdir(teamAssetDirectory, { recursive: true })
 await mkdir(dataDirectory, { recursive: true })
 
 const allTeams = []
@@ -50,10 +27,9 @@ for (const league of LEAGUES) {
   const raw = await getJson(ESPN_ENDPOINTS.teams(league.code))
   const teams = ESPNAdapter.normalizeTeams(raw, league.code)
   for (const team of teams) {
-    const downloaded = await downloadAndOptimize(team)
     allTeams.push({
       ...team,
-      localLogoPath: downloaded ? `teams/${team.id}.png` : null,
+      localLogoPath: null,
     })
   }
   console.log(`Synced ${teams.length} clubs for ${league.code}`)
@@ -84,4 +60,3 @@ await writeFile(
 )
 
 console.log(`Wrote ${allTeams.length} bundled teams`)
-

@@ -43,6 +43,27 @@ msgstr "System"
 msgid "last_sync"
 msgstr "Last sync"
 
+msgid "logo_sync"
+msgstr "Logo sync"
+
+msgid "logo_sync_waiting"
+msgstr "Waiting"
+
+msgid "logo_sync_preparing"
+msgstr "Preparing"
+
+msgid "logo_sync_transferring"
+msgstr "Transferring"
+
+msgid "logo_sync_complete"
+msgstr "Complete"
+
+msgid "logo_sync_failed"
+msgstr "Failed"
+
+msgid "logo_sync_unsupported"
+msgstr "Unsupported"
+
 msgid "data_source"
 msgstr "Data source"
 

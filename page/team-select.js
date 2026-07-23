@@ -17,7 +17,6 @@ import {
 } from '../shared/team-selection.js'
 import { reconcileTeamLists } from '../shared/team-list.js'
 import { isRtl, t } from '../device/locale.js'
-import { receiveDynamicLogo } from '../device/logo-receiver.js'
 import {
   goBack,
   parseRouteParams,
@@ -31,8 +30,6 @@ import {
   getLeagueCache,
   getSelectedLeagueCode,
   getSelectedTeam,
-  hasValidLocalLogo,
-  registerDynamicLogo,
   resolveTeamLogo,
   setLeagueCache,
   setSelectedLeagueCode,
@@ -373,19 +370,6 @@ Page(
       followTeam(selected)
       this.renderTeamList(true)
 
-      if (
-        !selected.localLogoPath &&
-        selected.logoUrl &&
-        !hasValidLocalLogo(selected.id, selected.logoUrl)
-      ) {
-        requestSide(
-          this,
-          'logo.ensure',
-          { teamId: selected.id, logoUrl: selected.logoUrl },
-          `logo:${selected.id}`,
-        ).catch(() => {})
-      }
-
       if (this.state.navigationTimer) {
         clearTimeout(this.state.navigationTimer)
       }
@@ -442,7 +426,6 @@ Page(
           )
           this.state.selectedTeamId = restored ? restored.id : null
           this.renderTeamList(true)
-          this.ensureMissingLogos()
         })
         .catch((error) => {
           if (this.state.destroyed) return
@@ -452,43 +435,6 @@ Page(
           }
           console.log(`[ClubPulse] league refresh failed: ${error.code}`)
         })
-    },
-
-    ensureMissingLogos() {
-      const missing = this.state.teams
-        .filter(
-          (team) =>
-            !team.localLogoPath &&
-            team.logoUrl &&
-            !hasValidLocalLogo(team.id, team.logoUrl),
-        )
-        .slice(0, 5)
-
-      const next = (index) => {
-        if (this.state.destroyed || index >= missing.length) return
-        const team = missing[index]
-        requestSide(
-          this,
-          'logo.ensure',
-          { teamId: team.id, logoUrl: team.logoUrl },
-          `logo:${team.id}`,
-        )
-          .catch(() => {})
-          .finally(() => next(index + 1))
-      }
-      next(0)
-    },
-
-    onReceivedFile(file) {
-      receiveDynamicLogo(file, ({ teamId, sourceUrl, localPath }) => {
-        if (this.state.destroyed) return
-        registerDynamicLogo(teamId, sourceUrl, localPath)
-        this.state.teams = this.state.teams.map(resolveTeamLogo)
-        const logo = this.state.rowLogos.get(String(teamId))
-        if (logo) {
-          logo.src = localPath
-        }
-      })
     },
 
     onDestroy() {
